@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OKV Inventory Management System — Install</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0B4F3A">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="OKV IMS">
+<style>
+  :root{
+    --forest:#0B4F3A; --forest-2:#0E5F46; --forest-3:#123B2C;
+    --cream:#FBF7EE; --gold:#C99A3E; --gold-soft:#F3E3BE;
+    --ink:#1C2620; --ink-soft:#5C6B62; --line:#E7E1D2; --ok:#2F7D5A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--cream); color:var(--ink);}
+  .hero{background:var(--forest);color:#fff;padding:48px 22px 60px;text-align:center;position:relative;}
+  .mark{width:64px;height:64px;border-radius:16px;background:var(--gold);display:flex;align-items:center;
+    justify-content:center;margin:0 auto 18px;font-family:Georgia,'Palatino Linotype',serif;font-weight:700;
+    color:var(--forest-3);font-size:19px;letter-spacing:-.5px;}
+  .hero h1{font-family:Georgia,'Palatino Linotype',serif;font-size:26px;line-height:1.3;margin:0 0 10px;}
+  .hero p{color:#D9E6DC;font-size:14.5px;line-height:1.5;max-width:420px;margin:0 auto;}
+  .wrap{max-width:480px;margin:-28px auto 0;padding:0 18px 50px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:16px;
+    box-shadow:0 12px 30px rgba(0,0,0,.06);}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px 18px;
+    border-radius:12px;border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .btn-install{background:var(--gold);color:var(--forest-3);}
+  .btn-install:disabled{opacity:.5;cursor:default;}
+  .btn-launch{background:var(--forest);color:#fff;margin-top:10px;}
+  .btn-outline{background:#fff;color:var(--forest);border:1.5px solid var(--forest);margin-top:10px;}
+  .status{font-size:13px;color:var(--ink-soft);text-align:center;margin-top:10px;line-height:1.5;}
+  .ios-steps{display:none;}
+  .ios-steps.show{display:block;}
+  .ios-steps ol{margin:10px 0 0;padding-left:20px;font-size:13.5px;line-height:1.9;color:var(--ink);}
+  .ios-steps .share-icon{display:inline-block;width:16px;height:16px;border:1.5px solid var(--forest);
+    border-radius:3px;position:relative;vertical-align:middle;}
+  .badge-installed{display:none;background:var(--gold-soft);color:#8A6414;border-radius:20px;padding:6px 14px;
+    font-size:12.5px;font-weight:700;text-align:center;margin-bottom:14px;}
+  .badge-installed.show{display:block;}
+  h2{font-family:Georgia,'Palatino Linotype',serif;font-size:16px;color:var(--forest);margin:0 0 8px;}
+  .feature-list{margin:0;padding-left:18px;font-size:13.5px;line-height:1.85;color:var(--ink-soft);}
+  .plan-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);
+    font-size:13px;}
+  .plan-row:last-child{border-bottom:none;}
+  .plan-name{font-weight:700;color:var(--forest-3);}
+  .plan-price{color:var(--ink-soft);}
+  footer{text-align:center;font-size:11.5px;color:var(--ink-soft);padding:0 18px 30px;}
+
+  /* ---- Install popup: prominent, appears immediately, stays until acted on ---- */
+  .install-overlay{
+    position:fixed;inset:0;background:rgba(11,79,58,.72);backdrop-filter:blur(2px);
+    z-index:1000;display:flex;align-items:flex-end;justify-content:center;
+    opacity:0;pointer-events:none;transition:opacity .25s ease;
+  }
+  .install-overlay.show{opacity:1;pointer-events:auto;}
+  @media(min-width:560px){ .install-overlay{align-items:center;} }
+  .install-popup{
+    background:#fff;border-radius:20px 20px 0 0;padding:28px 24px 26px;max-width:440px;width:100%;
+    box-shadow:0 -10px 50px rgba(0,0,0,.3);transform:translateY(30px);transition:transform .3s ease;
+    max-height:88vh;overflow-y:auto;
+  }
+  @media(min-width:560px){ .install-popup{border-radius:20px;} }
+  .install-overlay.show .install-popup{transform:translateY(0);}
+  .install-popup .mark{width:56px;height:56px;font-size:16px;letter-spacing:-.5px;margin:0 auto 14px;
+    box-shadow:0 8px 20px rgba(201,154,62,.4);animation:pulseMark 2s ease-in-out infinite;}
+  @keyframes pulseMark{0%,100%{transform:scale(1);}50%{transform:scale(1.06);}}
+  .install-popup h3{font-family:Georgia,'Palatino Linotype',serif;font-size:20px;text-align:center;
+    color:var(--forest-3);margin:0 0 6px;}
+  .install-popup .sub{text-align:center;color:var(--ink-soft);font-size:13.5px;line-height:1.5;margin:0 0 20px;}
+  .install-popup .btn-install{
+    background:linear-gradient(180deg,#D9AC4E,var(--gold));color:var(--forest-3);
+    box-shadow:0 6px 18px rgba(201,154,62,.45);font-size:16px;padding:16px 18px;
+    animation:pulseBtn 1.8s ease-in-out infinite;
+  }
+  @keyframes pulseBtn{0%,100%{box-shadow:0 6px 18px rgba(201,154,62,.45);}50%{box-shadow:0 6px 26px rgba(201,154,62,.75);}}
+  .install-popup .maybe-later{
+    display:block;width:100%;text-align:center;background:none;border:none;color:var(--ink-soft);
+    font-size:13px;padding:12px 0 0;cursor:pointer;font-family:inherit;text-decoration:underline;
+  }
+  .install-fab{
+    position:fixed;bottom:20px;right:20px;background:var(--gold);color:var(--forest-3);
+    border:none;border-radius:30px;padding:13px 20px;font-weight:700;font-size:14px;
+    box-shadow:0 8px 24px rgba(0,0,0,.25);cursor:pointer;display:none;align-items:center;gap:8px;
+    font-family:inherit;z-index:500;
+  }
+  .install-fab.show{display:flex;}
+</style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="mark">OKV</div>
+    <h1>OKV Inventory Management System</h1>
+    <p>You've been invited to your team's inventory workspace. Install the app for one-tap access — works online with automatic sync, and keeps working if your connection drops.</p>
+  </div>
+
+  <div class="wrap">
+    <div class="badge-installed" id="installedBadge">✓ Already installed on this device</div>
+
+    <div class="card">
+      <h2>Next steps</h2>
+      <ul class="feature-list">
+        <li>Install the app using the button below</li>
+        <li>Open it from your home screen once installed</li>
+        <li>Log in with the username and password your Admin gave you</li>
+        <li>If you don't have login details yet, ask your Admin to create your account first</li>
+      </ul>
+    </div>
+  </div>
+
+  <button class="btn btn-outline" onclick="window.location.href='login.html'" style="max-width:480px;margin:0 auto 30px;display:block;">Already installed? Go to Login</button>
+
+  <footer>Developed by: OKV Technology Consults &middot; technologyokv@gmail.com &middot; +234 810 414 1138 &middot; www.okvtechnology.com</footer>
+
+  <!-- Prominent install popup — appears immediately on this page, stays until the
+       person installs or explicitly dismisses it (never auto-hides). -->
+  <div class="install-overlay" id="installOverlay">
+    <div class="install-popup">
+      <div class="mark">OKV</div>
+      <h3>Install OKV Inventory Management System</h3>
+      <p class="sub">Get instant, one-tap access from your home screen — syncs automatically when you're online, and keeps working if you lose connection.</p>
+
+      <button class="btn btn-install" id="installBtn" disabled>Checking install availability…</button>
+
+      <div class="ios-steps" id="iosSteps">
+        <div style="font-size:13.5px;color:var(--ink-soft);">
+          On iPhone/iPad, install from Safari's Share menu:
+        </div>
+        <ol>
+          <li>Tap the <b>Share</b> icon <span class="share-icon"></span> in Safari's toolbar</li>
+          <li>Scroll down and tap <b>"Add to Home Screen"</b></li>
+          <li>Tap <b>"Add"</b> in the top-right corner</li>
+        </ol>
+      </div>
+
+      <div class="status" id="statusText"></div>
+      <button class="maybe-later" id="maybeLaterBtn" onclick="dismissInstallPopup()">Maybe later</button>
+    </div>
+  </div>
+
+  <!-- Reappears after "Maybe later" so installing is always one tap away on this page -->
+  <button class="install-fab" id="installFab" onclick="showInstallPopup()">⬇ Install App</button>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+
+const installBtn = document.getElementById('installBtn');
+const statusText = document.getElementById('statusText');
+const iosSteps = document.getElementById('iosSteps');
+const installedBadge = document.getElementById('installedBadge');
+const installOverlay = document.getElementById('installOverlay');
+const installFab = document.getElementById('installFab');
+const maybeLaterBtn = document.getElementById('maybeLaterBtn');
+
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+
+let deferredPrompt = null;
+
+function showInstallPopup(){
+  installOverlay.classList.add('show');
+  installFab.classList.remove('show');
+}
+function dismissInstallPopup(){
+  installOverlay.classList.remove('show');
+  // Stays one tap away rather than disappearing for good — reinforces
+  // "stay visible" without permanently blocking the rest of the page.
+  installFab.classList.add('show');
+}
+
+if (isStandalone) {
+  installedBadge.classList.add('show');
+  statusText.textContent = "You're using the installed app.";
+  // Nothing to install — don't show the popup at all.
+} else if (isIOS) {
+  installBtn.style.display = 'none';
+  iosSteps.classList.add('show');
+  showInstallPopup(); // pops up immediately, stays until "Maybe later"
+} else {
+  installBtn.textContent = 'Checking install availability…';
+  showInstallPopup(); // pops up immediately, stays until installed or dismissed
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.disabled = false;
+    installBtn.textContent = 'Install App Now';
+  });
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const choice = await deferredPrompt.userChoice;
+    if (choice.outcome === 'accepted') {
+      statusText.textContent = 'Installed! Open OKV IMS from your home screen to log in.';
+      setTimeout(dismissInstallPopup, 1400);
+    }
+    deferredPrompt = null;
+    installBtn.disabled = true;
+  });
+  // If the browser never fires beforeinstallprompt (already installed, or
+  // unsupported browser), don't leave the button stuck on "Checking…".
+  setTimeout(() => {
+    if (!deferredPrompt && installBtn.disabled) {
+      installBtn.textContent = 'Install not available in this browser';
+      statusText.textContent = 'Try Chrome or Edge on this device, or use "Go to Login" below.';
+    }
+  }, 2500);
+}
+
+window.addEventListener('appinstalled', () => {
+  installedBadge.classList.add('show');
+  dismissInstallPopup();
+  installFab.classList.remove('show');
+});
+</script>
+</body>
+</html>

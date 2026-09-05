@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /app.html
+Disallow: /demo.html
+Disallow: /super-admin.html
+Disallow: /reset-password.html
+Disallow: /install.html
+
+Sitemap: https://REPLACE-WITH-YOUR-DOMAIN.com/sitemap.xml

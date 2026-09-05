@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OKV Inventory Management System — Create Account</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0B4F3A">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+  :root{
+    --forest:#0B4F3A; --forest-2:#0E5F46; --forest-3:#123B2C;
+    --cream:#FBF7EE; --gold:#C99A3E; --gold-soft:#F3E3BE;
+    --ink:#1C2620; --ink-soft:#5C6B62; --line:#E7E1D2; --ok:#2F7D5A; --coral:#E2643D;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--forest); color:var(--ink); display:flex; flex-direction:column;}
+  .top{padding:36px 22px 14px;text-align:center;}
+  .mark{width:52px;height:52px;border-radius:13px;background:var(--gold);display:flex;align-items:center;
+    justify-content:center;margin:0 auto 12px;font-family:Georgia,'Palatino Linotype',serif;font-weight:700;
+    color:var(--forest-3);font-size:15px;letter-spacing:-.5px;}
+  .top h1{font-family:Georgia,'Palatino Linotype',serif;font-size:19px;color:#fff;margin:0 0 4px;}
+  .top p{color:#D9E6DC;font-size:13px;margin:0;max-width:340px;margin:0 auto;}
+  .sheet{background:var(--cream);border-radius:22px 22px 0 0;flex:1;padding:22px 22px 30px;margin-top:16px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;max-width:420px;margin:0 auto;
+    box-shadow:0 12px 30px rgba(0,0,0,.06);}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:5px;}
+  .hint{font-size:11.5px;color:var(--ink-soft);margin:-12px 0 14px;}
+  input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:15px;
+    margin-bottom:6px;font-family:inherit;background:#fff;color:var(--ink);}
+  input:focus{outline:none;border-color:var(--forest-2);}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px 18px;
+    border-radius:12px;border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:10px;}
+  .btn-primary{background:var(--forest);color:#fff;}
+  .btn-primary:disabled{opacity:.6;}
+  .btn-outline{background:#fff;color:var(--forest);border:1.5px solid var(--forest);}
+  .link-row{text-align:center;margin-top:14px;font-size:13px;}
+  .link-row a{color:var(--forest-2);text-decoration:none;font-weight:600;cursor:pointer;}
+  .agree-row{display:flex;align-items:flex-start;margin:4px 0 14px;}
+  .agree-row a{color:var(--forest-2);font-weight:600;}
+  .error-box{background:#FBE2D8;color:var(--coral);border-radius:10px;padding:10px 14px;font-size:13px;
+    margin-bottom:16px;display:none;}
+  .error-box.show{display:block;}
+  .success-card{display:none;text-align:center;}
+  .success-card.show{display:block;}
+  .success-card .tick{width:52px;height:52px;border-radius:50%;background:var(--ok);color:#fff;font-size:26px;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+  footer{text-align:center;font-size:11px;color:var(--ink-soft);padding:18px 18px 0;}
+  .plan-note{background:var(--gold-soft);border-radius:10px;padding:10px 14px;font-size:12px;color:#8A6414;margin-top:16px;}
+  .plan-card{background:var(--forest);color:#fff;border-radius:12px;padding:14px 16px;margin-bottom:20px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .plan-card .name{font-family:Georgia,'Palatino Linotype',serif;font-size:15px;font-weight:700;}
+  .plan-card .price{font-size:12.5px;color:#D9E6DC;margin-top:2px;}
+  .plan-card a{color:var(--gold);font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .trial-badge{display:flex;align-items:center;gap:8px;background:var(--gold-soft);border-radius:10px;
+    padding:9px 12px;font-size:12px;color:#8A6414;font-weight:600;margin-bottom:16px;}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="mark">OKV</div>
+  <h1>Create your organization</h1>
+  <p>Set up your Admin account — start your 7-day free trial, no card required.</p>
+</div>
+
+<div class="sheet">
+  <div class="card" id="signupCard">
+    <div class="plan-card">
+      <div>
+        <div class="name" id="planName">Starter — Monthly</div>
+        <div class="price" id="planPrice">Selected plan</div>
+      </div>
+      <a href="pricing.html">Change plan</a>
+    </div>
+
+    <div class="trial-badge">🎁 Every plan starts with a full-access 7-day free trial</div>
+
+    <div class="error-box" id="signupError"></div>
+    <form id="signupForm">
+      <label for="orgName">Organization / business name</label>
+      <input id="orgName" placeholder="e.g. Adaeze Stores Ltd" required>
+
+      <label for="fullName">Full name</label>
+      <input id="fullName" placeholder="e.g. Adaeze Okafor" required>
+
+      <div class="row2">
+        <div>
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="you@business.com" required>
+        </div>
+        <div>
+          <label for="phone">Phone number</label>
+          <input id="phone" type="tel" placeholder="0801 234 5678" required>
+        </div>
+      </div>
+
+      <label for="username">Username</label>
+      <input id="username" placeholder="e.g. adaeze.stores" required>
+      <div class="hint">What you'll type to log in — your email is used only for the welcome email and password resets.</div>
+
+      <div class="row2">
+        <div>
+          <label for="password">Password</label>
+          <input id="password" type="password" minlength="6" required>
+        </div>
+        <div>
+          <label for="password2">Confirm password</label>
+          <input id="password2" type="password" minlength="6" required>
+        </div>
+      </div>
+
+      <div class="agree-row">
+        <input type="checkbox" id="agreeTerms" required style="width:auto;margin:2px 10px 0 0;flex-shrink:0;">
+        <label for="agreeTerms" style="margin:0;font-weight:400;color:var(--ink);font-size:12.5px;line-height:1.5;">
+          I agree to the <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy</a>
+          and <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a>.
+        </label>
+      </div>
+
+      <button class="btn btn-primary" type="submit" id="signupBtn">Create Account</button>
+      <button class="btn btn-outline" type="button" onclick="window.location.href='pricing.html'">Back to Pricing</button>
+    </form>
+    <div class="link-row">Already have an account? <a onclick="window.location.href='login.html'">Log in</a></div>
+  </div>
+
+  <div class="card success-card" id="successCard">
+    <div class="tick">✓</div>
+    <strong style="display:block;font-size:16px;margin-bottom:6px;">Account created — welcome!</strong>
+    <p style="color:var(--ink-soft);font-size:13.5px;">Your 7-day free trial has started. We've emailed you a welcome note.
+      Next: install the app on your device, then log in with your new username and password.</p>
+    <button class="btn btn-primary" onclick="window.location.href='install.html'">Continue to Install</button>
+  </div>
+
+  <footer>Developed by: OKV Technology Consults &middot; technologyokv@gmail.com &middot; +234 810 414 1138 &middot; www.okvtechnology.com</footer>
+</div>
+
+<script>
+const API_URL = window.OKV_API_URL || 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+const params = new URLSearchParams(window.location.search);
+const plan = params.get('plan') || 'Starter';
+const cycle = params.get('cycle') || 'Monthly';
+const priceLabel = params.get('price') || '';
+document.getElementById('planName').textContent = plan + ' — ' + cycle;
+document.getElementById('planPrice').textContent = priceLabel || 'Selected plan — change anytime';
+
+async function sha256(text){
+  const enc = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+async function apiCall(action, payload){
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(Object.assign({ action }, payload)),
+  });
+  return res.json();
+}
+
+document.getElementById('signupForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errBox = document.getElementById('signupError');
+  errBox.classList.remove('show');
+
+  if(!document.getElementById('agreeTerms').checked){
+    errBox.textContent = 'Please agree to the Privacy Policy and Terms of Service to continue.';
+    errBox.classList.add('show');
+    return;
+  }
+  if(!navigator.onLine){
+    errBox.textContent = "You're offline — connect to the internet to create your account.";
+    errBox.classList.add('show');
+    return;
+  }
+  const orgName = document.getElementById('orgName').value.trim();
+  const fullName = document.getElementById('fullName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const password2 = document.getElementById('password2').value;
+  if(password !== password2){
+    errBox.textContent = 'Passwords do not match.';
+    errBox.classList.add('show');
+    return;
+  }
+  if(password.length < 6){
+    errBox.textContent = 'Password must be at least 6 characters.';
+    errBox.classList.add('show');
+    return;
+  }
+  const btn = document.getElementById('signupBtn');
+  btn.disabled = true; btn.textContent = 'Creating account…';
+  try{
+    const passwordHash = await sha256(password);
+    const result = await apiCall('signup', { orgName, fullName, email, phone, username, passwordHash, plan, billingCycle: cycle });
+    if(!result.success){
+      errBox.textContent = result.error || 'Could not create account.';
+      errBox.classList.add('show');
+      return;
+    }
+    document.getElementById('signupCard').style.display = 'none';
+    document.getElementById('successCard').classList.add('show');
+  }catch(err){
+    errBox.textContent = 'Could not reach the server. Check your connection and try again.';
+    errBox.classList.add('show');
+  }finally{
+    btn.disabled = false; btn.textContent = 'Create Account';
+  }
+});
+</script>
+<style>
+.pw-toggle-wrap{position:relative;}
+.pw-toggle-wrap input[type="password"],.pw-toggle-wrap input[type="text"].pw-toggled{padding-right:40px !important;}
+.pw-toggle-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:none;
+  cursor:pointer;padding:4px 6px;line-height:0;color:#6b7a70;}
+.pw-toggle-btn:hover{color:#1C2620;}
+.pw-toggle-btn svg{width:18px;height:18px;display:block;}
+</style>
+<script>
+(function(){
+  var EYE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var EYE_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.3 21.3 0 0 1 5.06-5.94M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 7 11 7a21.4 21.4 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  function wrapOne(inp){
+    if(inp.dataset.pwWrapped) return;
+    inp.dataset.pwWrapped='1';
+    var wrap=document.createElement('div');
+    wrap.className='pw-toggle-wrap';
+    inp.parentNode.insertBefore(wrap,inp);
+    wrap.appendChild(inp);
+    var btn=document.createElement('button');
+    btn.type='button';
+    btn.className='pw-toggle-btn';
+    btn.setAttribute('aria-label','Show password');
+    btn.innerHTML=EYE;
+    btn.addEventListener('click',function(){
+      var showing = inp.type==='text';
+      inp.type = showing ? 'password' : 'text';
+      inp.classList.toggle('pw-toggled', !showing);
+      btn.innerHTML = showing ? EYE : EYE_OFF;
+      btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+    });
+    wrap.appendChild(btn);
+  }
+  function scan(){ document.querySelectorAll('input[type="password"]').forEach(wrapOne); }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',scan); } else { scan(); }
+  // Re-scan on a short interval briefly after load to catch fields rendered
+  // dynamically by JS (modals, tabs) without needing a change in every call site.
+  var tries=0;
+  var iv=setInterval(function(){ scan(); if(++tries>20) clearInterval(iv); },500);
+  window.pwToggleRescan = scan;
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OKV Inventory Management System — Manage Stock, Sales &amp; Reports, Online or Offline</title>
+<meta name="description" content="OKV Inventory Management System manages products, stock levels, purchases, sales, stock movement, and reports — for one shop or many, on any device, online or fully offline.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0B4F3A">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+  :root{
+    --forest:#0B4F3A; --forest-2:#0E5F46; --forest-3:#123B2C;
+    --cream:#FBF7EE; --gold:#C99A3E; --gold-soft:#F3E3BE;
+    --ink:#1C2620; --ink-soft:#5C6B62; --line:#E7E1D2; --ok:#2F7D5A; --coral:#E2643D;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--cream);color:var(--ink);line-height:1.5;}
+  a{text-decoration:none;}
+  h1,h2,h3{font-family:Georgia,'Palatino Linotype',serif;color:var(--forest-3);margin:0;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px;}
+  section{padding:70px 0;}
+  .eyebrow{display:inline-block;background:var(--gold-soft);color:#8A6414;font-size:12px;font-weight:700;
+    padding:6px 14px;border-radius:20px;margin-bottom:14px;letter-spacing:.3px;}
+  .section-head{max-width:640px;margin:0 auto 44px;text-align:center;}
+  .section-head h2{font-size:28px;margin-bottom:10px;}
+  .section-head p{color:var(--ink-soft);font-size:15px;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 24px;border-radius:12px;
+    font-weight:700;font-size:14.5px;cursor:pointer;border:none;font-family:inherit;}
+  .btn-gold{background:var(--gold);color:var(--forest-3);}
+  .btn-gold:hover{background:#D9AC4E;}
+  .btn-outline-light{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5);}
+  .btn-outline-light:hover{border-color:#fff;}
+  .btn-forest{background:var(--forest);color:#fff;}
+  .btn-forest:hover{background:var(--forest-2);}
+
+  /* ---- Header / nav ---- */
+  header{position:sticky;top:0;z-index:200;background:var(--forest);color:#fff;}
+  .topnav{max-width:1120px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+  .brand{display:flex;align-items:center;gap:10px;color:#fff;}
+  .mark{width:36px;height:36px;border-radius:9px;background:var(--gold);display:flex;align-items:center;justify-content:center;
+    font-family:Georgia,'Palatino Linotype',serif;font-weight:700;color:var(--forest-3);font-size:11px;letter-spacing:-.5px;flex-shrink:0;}
+  .brand-name{font-family:Georgia,'Palatino Linotype',serif;font-weight:700;font-size:15px;line-height:1.2;}
+  .navlinks{display:flex;gap:22px;align-items:center;}
+  .navlinks a{color:#D9E6DC;font-size:13.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  .navlinks a:hover{color:#fff;}
+  .nav-cta{display:flex;align-items:center;gap:10px;}
+  .nav-cta a.login{color:#D9E6DC;font-size:13.5px;font-weight:600;}
+  .mobile-toggle{display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;}
+  @media(max-width:920px){
+    .navlinks{display:none;position:absolute;top:100%;left:0;right:0;background:var(--forest);flex-direction:column;
+      padding:14px 22px 20px;gap:14px;box-shadow:0 12px 24px rgba(0,0,0,.2);}
+    .navlinks.open{display:flex;}
+    .mobile-toggle{display:block;}
+    .nav-cta .login{display:none;}
+  }
+
+  /* ---- Hero ---- */
+  .hero{background:linear-gradient(180deg,var(--forest),var(--forest-3));color:#fff;padding:70px 0 90px;text-align:center;}
+  .hero .eyebrow{background:rgba(201,154,62,.18);color:var(--gold);}
+  .hero h1{color:#fff;font-size:38px;line-height:1.25;max-width:760px;margin:0 auto 18px;}
+  .hero p{color:#D9E6DC;font-size:16px;max-width:560px;margin:0 auto 30px;}
+  .hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;}
+  .hero-note{color:#B9CFC2;font-size:12.5px;}
+  .device-strip{display:flex;justify-content:center;gap:26px;margin-top:44px;flex-wrap:wrap;color:#B9CFC2;font-size:12.5px;font-weight:600;}
+  .device-strip span{display:flex;align-items:center;gap:7px;}
+
+  /* ---- Trust / guarantee bar ---- */
+  .trustbar{background:var(--gold-soft);color:#8A6414;text-align:center;padding:12px 22px;font-size:13px;font-weight:700;}
+
+  /* ---- About ---- */
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+  @media(max-width:800px){.about-grid{grid-template-columns:1fr;}}
+  .about-grid ul{list-style:none;margin:20px 0 0;padding:0;}
+  .about-grid li{display:flex;gap:10px;padding:8px 0;font-size:14.5px;}
+  .about-grid li .tick{color:var(--ok);font-weight:800;flex-shrink:0;}
+  .stat-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;text-align:center;}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .stat-card .num{font-family:Georgia,'Palatino Linotype',serif;font-size:26px;color:var(--forest);}
+  .stat-card .lbl{font-size:12px;color:var(--ink-soft);margin-top:4px;}
+
+  /* ---- How it works (offline/online) ---- */
+  .how-cards{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  @media(max-width:800px){.how-cards{grid-template-columns:1fr;}}
+  .how-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px;}
+  .how-card .icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+    font-size:20px;margin-bottom:16px;}
+  .how-card.offline .icon{background:var(--gold-soft);}
+  .how-card.online .icon{background:#E5EEFB;}
+  .how-card h3{font-size:19px;margin-bottom:8px;}
+  .how-card p{color:var(--ink-soft);font-size:14px;margin-bottom:14px;}
+  .how-card ul{margin:0;padding-left:18px;color:var(--ink);font-size:13.5px;line-height:1.9;}
+  .flow-steps{display:flex;justify-content:center;gap:0;margin-top:40px;flex-wrap:wrap;}
+  .flow-step{flex:1;min-width:150px;text-align:center;padding:0 14px;position:relative;}
+  .flow-step .n{width:34px;height:34px;border-radius:50%;background:var(--forest);color:#fff;font-weight:700;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:14px;}
+  .flow-step .t{font-weight:700;font-size:13.5px;margin-bottom:4px;}
+  .flow-step .d{font-size:12px;color:var(--ink-soft);}
+
+  /* ---- Devices ---- */
+  .device-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+  @media(max-width:800px){.device-cards{grid-template-columns:1fr;}}
+  .device-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:26px;text-align:center;}
+  .device-card .emoji{font-size:30px;margin-bottom:12px;}
+  .device-card h3{font-size:16px;margin-bottom:6px;}
+  .device-card p{font-size:13px;color:var(--ink-soft);}
+  .platform-note{text-align:center;max-width:640px;margin:36px auto 0;color:var(--ink-soft);font-size:13.5px;
+    background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 22px;}
+
+  /* ---- Features ---- */
+  .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  @media(max-width:900px){.feature-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:600px){.feature-grid{grid-template-columns:1fr;}}
+  .feature-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;}
+  .feature-card .icon{width:38px;height:38px;border-radius:10px;background:var(--cream);display:flex;
+    align-items:center;justify-content:center;font-size:17px;margin-bottom:12px;}
+  .feature-card h3{font-size:14.5px;margin-bottom:6px;}
+  .feature-card p{font-size:12.5px;color:var(--ink-soft);}
+
+  /* ---- Why choose us ---- */
+  .why-section{background:var(--forest);color:#fff;}
+  .why-section .section-head h2{color:#fff;}
+  .why-section .section-head p{color:#D9E6DC;}
+  .why-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:26px;}
+  @media(max-width:800px){.why-grid{grid-template-columns:1fr;}}
+  .why-item{display:flex;gap:14px;}
+  .why-item .icon{width:40px;height:40px;border-radius:10px;background:rgba(201,154,62,.18);color:var(--gold);
+    display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .why-item h3{color:#fff;font-size:15.5px;margin-bottom:5px;}
+  .why-item p{color:#B9CFC2;font-size:13px;}
+
+  /* ---- FAQ ---- */
+  details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:10px;}
+  summary{font-weight:700;font-size:14.5px;cursor:pointer;color:var(--forest-3);}
+  details p{font-size:13.5px;color:var(--ink-soft);margin:10px 0 0;line-height:1.7;}
+  .faq-wrap{max-width:720px;margin:0 auto;}
+
+  /* ---- Final CTA ---- */
+  .final-cta{background:linear-gradient(135deg,var(--forest),var(--forest-3));color:#fff;text-align:center;padding:64px 22px;}
+  .final-cta h2{color:#fff;font-size:26px;margin-bottom:12px;}
+  .final-cta p{color:#D9E6DC;font-size:14.5px;margin-bottom:26px;}
+  .final-cta .hero-ctas{margin-bottom:14px;}
+
+  /* ---- Footer ---- */
+  footer{background:var(--forest-3);color:#B9CFC2;padding:50px 0 24px;font-size:13px;}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:30px;margin-bottom:36px;}
+  @media(max-width:800px){.footer-grid{grid-template-columns:1fr 1fr;}}
+  .footer-grid h4{color:#fff;font-size:13px;margin-bottom:14px;}
+  .footer-grid a{display:block;color:#B9CFC2;margin-bottom:9px;font-size:13px;}
+  .footer-grid a:hover{color:#fff;}
+  .footer-brand{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .footer-brand .brand-name{color:#fff;}
+  .footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:20px;text-align:center;font-size:12px;color:#8CA398;}
+
+  ::selection{background:var(--gold-soft);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="topnav">
+    <a class="brand" href="#top">
+      <div class="mark">OKV</div>
+      <div class="brand-name">OKV Inventory<br>Management System</div>
+    </a>
+    <nav class="navlinks" id="navLinks">
+      <a href="#about">About</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#devices">Devices</a>
+      <a href="#features">Features</a>
+      <a href="#why-us">Why Us</a>
+      <a href="#faq">FAQ</a>
+      <a href="login.html" class="login">Log In</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="login" href="login.html">Log In</a>
+      <a class="btn btn-gold" href="pricing.html" style="padding:10px 18px;font-size:10px;">Start 7-Day Free Trial</a>
+      <button class="mobile-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+    </div>
+  </div>
+</header>
+
+<div id="top"></div>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Built for Nigerian shops, wholesalers &amp; growing teams</span>
+    <h1>Manage your stock, sales, and reports — online or fully offline, on any device.</h1>
+    <p>OKV Inventory Management System tracks every product, purchase, sale, and stock movement in real time, so you always know what you have, what you're selling, and what you're making.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-gold" href="pricing.html">Start 7-Day Free Trial</a>
+      <a class="btn btn-outline-light" href="demo.html">▶ View Live Demo</a>
+    </div>
+    <div class="hero-note">No card required for your trial · Cancel anytime · 30-day money-back guarantee</div>
+    <div class="device-strip">
+      <span>💻 Works on Laptop</span>
+      <span>📱 Works on Tablet</span>
+      <span>📲 Works on Mobile</span>
+      <span>📶 Works Offline</span>
+    </div>
+  </div>
+</section>
+
+<div class="trustbar">🛡️ 30-Day Money-Back Guarantee — try it risk-free on every paid plan</div>
+
+<!-- ================= ABOUT ================= -->
+<section id="about">
+  <div class="wrap">
+    <div class="about-grid">
+      <div>
+        <span class="eyebrow">About the system</span>
+        <h2 style="font-size:19px;margin-bottom:14px;">One system for everything moving in and out of your business</h2>
+        <p style="color:var(--ink-soft);font-size:14.5px;">OKV Inventory Management System was built by OKV Technology Consults to replace manual stock books and scattered spreadsheets with a single, easy-to-use dashboard. It manages products/items, stock levels, purchases, sales, stock movement, and reports — the five things every business needs to stay on top of, in one place.</p>
+        <ul>
+          <li><span class="tick">✓</span> Every sale, purchase, and stock adjustment recorded automatically</li>
+          <li><span class="tick">✓</span> One shared, always-current view of stock — no more guessing</li>
+          <li><span class="tick">✓</span> Built specifically around how Nigerian SMEs actually operate</li>
+        </ul>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="num">17</div><div class="lbl">Business modules in one system</div></div>
+        <div class="stat-card"><div class="num">7</div><div class="lbl">Days free, full access, no card</div></div>
+        <div class="stat-card"><div class="num">2</div><div class="lbl">Ways to run it — online or offline</div></div>
+        <div class="stat-card"><div class="num">30</div><div class="lbl">Day money-back guarantee</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section id="how-it-works" style="background:#fff;">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">How it works</span>
+      <h2>Offline when you need it. Online when you want more.</h2>
+      <p>Two ways to run OKV IMS, built on the exact same system underneath — pick what fits your business today, and move to the other whenever you're ready.</p>
+    </div>
+    <div class="how-cards">
+      <div class="how-card offline">
+        <div class="icon">📶</div>
+        <h3>Offline — "Own It Once"</h3>
+        <p>Installs straight onto one device and runs with zero internet connection, every day. Pay once, no subscription.</p>
+        <ul>
+          <li>All data stored securely on that device</li>
+          <li>Works in areas with no or unreliable internet</li>
+          <li>Single user, no login needed</li>
+          <li>One-time payment — Basic or Professional</li>
+        </ul>
+      </div>
+      <div class="how-card online">
+        <div class="icon">☁️</div>
+        <h3>Online — "Subscribe"</h3>
+        <p>Cloud-synced across your whole team and every branch — and still keeps working if your connection drops.</p>
+        <ul>
+          <li>Multiple staff logins with role-based access</li>
+          <li>Monitor every branch remotely, from anywhere</li>
+          <li>Works offline too — syncs the moment you reconnect</li>
+          <li>Monthly, bi-annual, or yearly subscription</li>
+        </ul>
+      </div>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step"><div class="n">1</div><div class="t">Add your stock</div><div class="d">Products, suppliers, opening stock</div></div>
+      <div class="flow-step"><div class="n">2</div><div class="t">Sell &amp; record</div><div class="d">POS sales, purchases, transfers</div></div>
+      <div class="flow-step"><div class="n">3</div><div class="t">Stock updates itself</div><div class="d">Every movement tracked automatically</div></div>
+      <div class="flow-step"><div class="n">4</div><div class="t">See it on your dashboard</div><div class="d">Reports, profit, reorder alerts</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DEVICES / CROSS-PLATFORM ================= -->
+<section id="devices">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Cross-platform accessibility</span>
+      <h2>Laptop, tablet, or phone — it's the same system everywhere</h2>
+      <p>OKV IMS is a Progressive Web App: install it like a normal app on any device, with no app store needed.</p>
+    </div>
+    <div class="device-cards">
+      <div class="device-card">
+        <div class="emoji">💻</div>
+        <h3>Laptop &amp; Desktop</h3>
+        <p>Full back-office view on Windows or Mac — ideal for managing purchasing, reports, and your whole product catalog.</p>
+      </div>
+      <div class="device-card">
+        <div class="emoji">📱</div>
+        <h3>Tablet</h3>
+        <p>A comfortable middle ground for the shop floor — browse stock, take deliveries, and check reports on the move.</p>
+      </div>
+      <div class="device-card">
+        <div class="emoji">📲</div>
+        <h3>Mobile Phone</h3>
+        <p>Run the till from your phone with the POS screen, scan barcodes with the camera, and check the dashboard from anywhere.</p>
+      </div>
+    </div>
+    <div class="platform-note">
+      Install it once from your browser — Android, iPhone/iPad, Windows, and Mac are all supported. No app store, no separate download, and updates arrive automatically. Your data and your login work the same way no matter which device you open it on.
+    </div>
+  </div>
+</section>
+
+<!-- ================= FEATURES ================= -->
+<section id="features" style="background:#fff;">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Features</span>
+      <h2>Everything a growing business needs to run its stock and sales</h2>
+      <p>17 connected modules — add a product once, and every other screen stays in sync automatically.</p>
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="icon">📊</div><h3>Live Dashboard</h3><p>Inventory value, revenue, profit, and reorder alerts at a glance, with charts and business insights.</p></div>
+      <div class="feature-card"><div class="icon">📦</div><h3>Product Master</h3><p>SKUs, barcodes, categories, cost &amp; selling price, reorder levels — all in one catalog.</p></div>
+      <div class="feature-card"><div class="icon">📷</div><h3>Barcode Scanning</h3><p>Scan to register or price-update a product, or scan straight into a sale at the till.</p></div>
+      <div class="feature-card"><div class="icon">🧾</div><h3>Point of Sale</h3><p>Fast checkout with live cart totals, printed or downloaded receipts, and USB thermal printer support.</p></div>
+      <div class="feature-card"><div class="icon">🚚</div><h3>Purchasing</h3><p>Purchase orders, supplier records, and goods-received tracking with automatic stock updates.</p></div>
+      <div class="feature-card"><div class="icon">⚠️</div><h3>Reorder Alerts</h3><p>Automatic low-stock flags with one-click purchase order creation — never run out unexpectedly.</p></div>
+      <div class="feature-card"><div class="icon">🗓️</div><h3>Batch &amp; Expiry</h3><p>Track manufacture and expiry dates with colour-coded warnings as expiry approaches.</p></div>
+      <div class="feature-card"><div class="icon">💰</div><h3>Expenses &amp; P&amp;L</h3><p>Log expenses by category and see automatic profit &amp; loss, always up to date.</p></div>
+      <div class="feature-card"><div class="icon">📈</div><h3>Advanced Reports</h3><p>Daily, weekly, monthly, and yearly reports with charts, top products, and downloadable exports.</p></div>
+      <div class="feature-card"><div class="icon">👥</div><h3>Team &amp; Roles</h3><p>Add staff with specific roles — Cashier, Storekeeper, Procurement, Auditor, and more.</p></div>
+      <div class="feature-card"><div class="icon">📥</div><h3>CSV Import/Export</h3><p>Bring in existing product lists or export any table to CSV, with a format guide on every screen.</p></div>
+      <div class="feature-card"><div class="icon">🔄</div><h3>Offline-First Sync</h3><p>Keep working with no connection — every change syncs automatically the moment you're back online.</p></div>
+      <div class="feature-card"><div class="icon">📣</div><h3>Message Members</h3><p>Send announcements, personalized notes, and birthday/anniversary greetings to customers by Email, SMS, or WhatsApp — individually or all at once.</p></div>
+      <div class="feature-card"><div class="icon">💬</div><h3>Team Chat</h3><p>Built-in messaging between Admin and staff, right inside the dashboard — no separate app needed.</p></div>
+      <div class="feature-card"><div class="icon">💳</div><h3>Self-Service Upgrade</h3><p>Pay by bank transfer, upload your proof of payment in the app, and get upgraded automatically once confirmed.</p></div>
+      <div class="feature-card"><div class="icon">📘</div><h3>Built-In User Manual</h3><p>Downloadable guides for Admins and staff, matched automatically to each person's role.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WHY CHOOSE US ================= -->
+<section id="why-us" class="why-section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow" style="background:rgba(201,154,62,.18);color:var(--gold);">Why choose OKV IMS</span>
+      <h2>Built for how Nigerian businesses actually work</h2>
+      <p>Not a generic global tool — a system designed around Naira pricing, local business patterns, and the reality of unreliable internet.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-item"><div class="icon">🇳🇬</div><div><h3>Built for Nigerian businesses</h3><p>Naira pricing throughout, and workflows designed around how local shops, wholesalers, and SMEs actually operate day to day.</p></div></div>
+      <div class="why-item"><div class="icon">📶</div><div><h3>Never blocked by bad internet</h3><p>The offline-first design means a weak connection never stops a sale — everything queues and syncs automatically.</p></div></div>
+      <div class="why-item"><div class="icon">🔒</div><div><h3>Your data stays yours</h3><p>Offline plans keep everything on your own device. Online plans keep every organisation's data completely isolated from every other.</p></div></div>
+      <div class="why-item"><div class="icon">💬</div><div><h3>Real, local support</h3><p>Backed directly by OKV Technology Consults — not a faceless global company you can never reach.</p></div></div>
+      <div class="why-item"><div class="icon">🛡️</div><div><h3>Try it risk-free</h3><p>A genuine 7-day free trial with full access, plus a 30-day money-back guarantee on every paid plan.</p></div></div>
+      <div class="why-item"><div class="icon">📱</div><div><h3>One login, every device</h3><p>Install on your laptop, tablet, and phone — the same account and the same live data everywhere.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section id="faq" style="background:#fff;">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Questions &amp; answers</span>
+      <h2>Frequently asked questions</h2>
+    </div>
+    <div class="faq-wrap">
+      <details open>
+        <summary>What's the difference between the Offline and Online editions?</summary>
+        <p>Offline is a one-time payment that installs on a single device and never needs the internet day-to-day. Online is a subscription that syncs your data across every staff member and branch in real time, and still keeps working if you lose connection — it syncs automatically once you're back online.</p>
+      </details>
+      <details>
+        <summary>Do I need to enter my card to start the free trial?</summary>
+        <p>No. Every plan starts with a genuine 7-day free trial with full access — no card required. Your dashboard shows a countdown and an upgrade button the whole time.</p>
+      </details>
+      <details>
+        <summary>What happens if my internet goes down?</summary>
+        <p>Nothing stops. You can keep adding products, recording sales, and using every screen exactly as normal — everything is saved on your device immediately and syncs to the cloud automatically the moment you're back online.</p>
+      </details>
+      <details>
+        <summary>Can I use it on my phone, or do I need a computer?</summary>
+        <p>Either — OKV IMS installs like a normal app on Windows, Mac, Android, and iPhone/iPad, all from the same account. Many shop owners run the till entirely from a phone.</p>
+      </details>
+      <details>
+        <summary>What does the 30-day money-back guarantee cover?</summary>
+        <p>If you pay for a plan and it's not right for your business, tell us within 30 days of that payment and we'll refund it in full.</p>
+      </details>
+      <details>
+        <summary>Can I try it before signing up for anything?</summary>
+        <p>Yes — the Live Demo lets you click through the entire system with sample data, no signup needed, so you can see exactly how it works first.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FINAL CTA ================= -->
+<section class="final-cta">
+  <div class="wrap">
+    <h2>Ready to see your stock clearly?</h2>
+    <p>Start your 7-day free trial today — no card required, cancel anytime.</p>
+    <div class="hero-ctas">
+      <a class="btn btn-gold" href="pricing.html">Start 7-Day Free Trial</a>
+      <a class="btn btn-outline-light" href="demo.html">▶ View Live Demo</a>
+    </div>
+    <div class="hero-note">🛡️ 30-day money-back guarantee on every paid plan</div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><div class="mark">OKV</div><div class="brand-name" style="font-family:Georgia,'Palatino Linotype',serif;font-weight:700;">OKV Inventory Management System</div></div>
+        <p style="max-width:280px;font-size:13px;">Manages products, stock levels, purchases, sales, stock movement, and reports — online or fully offline.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <a href="#about">About</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#features">Features</a>
+        <a href="demo.html">Live Demo</a>
+      </div>
+      <div>
+        <h4>Get Started</h4>
+        <a href="pricing.html">Pricing</a>
+        <a href="pricing.html">Start Free Trial</a>
+        <a href="login.html">Log In</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <a href="#why-us">Why Choose Us</a>
+        <a href="https://www.okvtechnology.com">www.okvtechnology.com</a>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <a href="mailto:technologyokv@gmail.com">technologyokv@gmail.com</a>
+        <a href="tel:+2348104141138">+234 810 414 1138</a>
+        <a href="https://wa.me/2348104141138">WhatsApp Us</a>
+      </div>
+    </div>
+    <div class="footer-bottom">Developed by: OKV Technology Consults &nbsp;·&nbsp; technologyokv@gmail.com &nbsp;·&nbsp; +234 810 414 1138 &nbsp;·&nbsp; www.okvtechnology.com</div>
+  </div>
+</footer>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+document.querySelectorAll('#navLinks a[href^="#"]').forEach(a => {
+  a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'));
+});
+</script>
+</body>
+</html>

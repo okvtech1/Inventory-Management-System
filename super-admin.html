@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OKV IMS — Super Admin Dashboard</title>
+<link rel="icon" href="icons/icon-192.png">
+<style>
+  :root{
+    --forest:#0B4F3A; --forest-2:#0E5F46; --forest-3:#123B2C;
+    --cream:#FBF7EE; --gold:#C99A3E; --gold-soft:#F3E3BE;
+    --ink:#1C2620; --ink-soft:#5C6B62; --line:#E7E1D2; --ok:#2F7D5A; --coral:#E2643D; --warn:#B8860B;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--cream);color:var(--ink);}
+  #gate{position:fixed;inset:0;background:var(--forest);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;z-index:999;}
+  .app{display:none;min-height:100vh;}
+  .app.ready{display:flex;}
+  .sidebar{width:230px;background:var(--forest-3);color:#EFE9DA;flex-shrink:0;padding:18px 0;min-height:100vh;}
+  .sidebar .brand{padding:0 18px 18px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:10px;}
+  .sidebar .brand b{display:block;font-size:14.5px;color:#fff;}
+  .sidebar .brand span{font-size:11px;color:#B7C2BA;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:11px 18px;font-size:13.5px;cursor:pointer;color:#D9E0D9;}
+  .nav-item:hover{background:rgba(255,255,255,.06);}
+  .nav-item.active{background:var(--gold);color:var(--forest-3);font-weight:700;}
+  .nav-group-label{padding:14px 18px 4px;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#8FA093;}
+  .main{flex:1;padding:22px 26px 60px;max-width:1100px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+  .topbar h1{font-size:19px;margin:0;font-family:Georgia,serif;color:var(--forest-3);}
+  .pill{background:#fff;border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:12.5px;display:flex;align-items:center;gap:6px;}
+  .page{display:none;}
+  .page.active{display:block;}
+  .card-x{background:#fff;border:1px solid var(--line);border-radius:14px;}
+  .p3{padding:16px;}
+  .mb3{margin-bottom:14px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  @media (max-width:720px){.grid2,.grid3{grid-template-columns:1fr;} .sidebar{width:64px;} .sidebar .brand span,.sidebar .nav-item span.lbl{display:none;} .nav-group-label{display:none;}}
+  label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin:0 0 4px;}
+  input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:13.5px;
+    font-family:inherit;background:#fff;color:var(--ink);margin-bottom:10px;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--forest-2);}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:9px;border:none;
+    font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .btn-gold{background:var(--gold);color:var(--forest-3);}
+  .btn-outline{background:#fff;border:1.5px solid var(--forest);color:var(--forest);}
+  .btn-danger{background:#FBE2D8;color:var(--coral);}
+  .btn-sm{padding:6px 11px;font-size:12px;}
+  table.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+  table.tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);
+    padding:8px 10px;border-bottom:1px solid var(--line);}
+  table.tbl td{padding:9px 10px;border-bottom:1px solid #F0EBDD;vertical-align:top;}
+  table.tbl tr:hover td{background:#FBF8F0;}
+  .badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+  .b-ok{background:#E3F2E9;color:var(--ok);} .b-warn{background:var(--gold-soft);color:var(--warn);}
+  .b-danger{background:#FBE2D8;color:var(--coral);} .b-muted{background:#EDEAE0;color:var(--ink-soft);}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--forest-3);color:#fff;
+    padding:11px 20px;border-radius:10px;font-size:13px;z-index:1000;display:none;box-shadow:0 8px 20px rgba(0,0,0,.2);}
+  .toast.show{display:block;}
+  .section-title{font-size:15px;font-weight:700;color:var(--forest-3);margin:0 0 4px;}
+  .section-sub{font-size:12.5px;color:var(--ink-soft);margin:0 0 14px;}
+  .close-x{cursor:pointer;color:var(--ink-soft);font-size:18px;}
+  .modal-backdrop{position:fixed;inset:0;background:rgba(20,30,25,.45);display:none;align-items:center;justify-content:center;z-index:500;padding:16px;}
+  .modal-backdrop.show{display:flex;}
+  .modal{background:#fff;border-radius:16px;max-width:520px;width:100%;max-height:88vh;overflow:auto;padding:20px;}
+  .chip{display:inline-block;background:var(--gold-soft);color:#7A5B14;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;margin-right:4px;}
+  .feature-tag{display:inline-block;background:#EDEAE0;padding:2px 8px;border-radius:6px;font-size:11px;margin:2px 3px 0 0;}
+  .plan-card{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;}
+</style>
+</head>
+<body>
+
+<div id="gate">Loading Super Admin Dashboard…</div>
+
+<div class="app" id="app">
+  <div class="sidebar">
+    <div class="brand"><b>OKV IMS</b><span>Super Admin</span></div>
+    <div class="nav-item active" data-target="orgs"><i>🏢</i><span class="lbl">Organizations</span></div>
+    <div class="nav-item" data-target="capacity"><i>📊</i><span class="lbl">Capacity Monitor</span></div>
+    <div class="nav-item" data-target="messaging"><i>📣</i><span class="lbl">Messaging</span></div>
+    <div class="nav-group-label">Settings</div>
+    <div class="nav-item" data-target="contact"><i>☎️</i><span class="lbl">Contact &amp; Payment</span></div>
+    <div class="nav-item" data-target="branding"><i>🎨</i><span class="lbl">Branding</span></div>
+    <div class="nav-item" data-target="plans"><i>💳</i><span class="lbl">Pricing &amp; Plans</span></div>
+    <div class="nav-item" data-target="reminders"><i>⏰</i><span class="lbl">Reminders</span></div>
+    <div class="nav-item" data-target="account"><i>👤</i><span class="lbl">My Account</span></div>
+    <div class="nav-item" onclick="logoutSuperAdmin()"><i>↩</i><span class="lbl">Log Out</span></div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">Organizations</h1>
+      <div class="pill">👤 <span id="whoLabel">—</span></div>
+    </div>
+
+    <!-- ============ ORGANIZATIONS ============ -->
+    <div class="page active" id="page-orgs">
+      <p class="section-sub">Every tenant, their contact details, plan, and subscription status — manage them here instead of the spreadsheet.</p>
+      <div class="card-x p3 mb3">
+        <input id="orgSearch" placeholder="Search by organisation, admin name, or email…" oninput="renderOrgTable()" style="margin-bottom:0;">
+      </div>
+      <div class="card-x p3">
+        <div style="overflow:auto;">
+          <table class="tbl"><thead><tr>
+            <th>Organisation</th><th>Admin</th><th>Contact</th><th>Plan</th><th>Subscription</th><th>Org Status</th><th></th>
+          </tr></thead><tbody id="tblOrgs"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ CAPACITY MONITOR ============ -->
+    <div class="page" id="page-capacity">
+      <p class="section-sub">Cell usage against Google Sheets' 10,000,000-cell hard limit. Checked automatically once a day — this view is Super Admin-only; org Admins and staff never see it.</p>
+      <div class="mb3"><button class="btn btn-outline btn-sm" onclick="runCapacityCheckNow()"><span id="capCheckLabel">Run Check Now</span></button></div>
+      <div class="card-x p3">
+        <div style="overflow:auto;">
+          <table class="tbl"><thead><tr>
+            <th>Organisation</th><th>% Used</th><th>Est. Time Remaining</th><th>Status</th><th>Recommended Action</th><th></th>
+          </tr></thead><tbody id="tblCapacity"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ MESSAGING ============ -->
+    <div class="page" id="page-messaging">
+      <p class="section-sub">Send announcements or personalized messages to org Admins by Email, SMS, and/or WhatsApp.</p>
+      <div class="card-x p3 mb3">
+        <div class="grid2">
+          <div>
+            <label>Audience</label>
+            <select id="samAudience" onchange="renderSamRecipientPicker()">
+              <option value="all">All Organisations</option>
+              <option value="selected">Select Individually</option>
+              <option value="expiringSoon">Trial/Subscription Expiring in 14 Days</option>
+              <option value="expired">Already Expired</option>
+            </select>
+          </div>
+          <div>
+            <label>Message Type</label>
+            <select id="samType"><option>Announcement</option><option>Personalized</option><option>Other</option></select>
+          </div>
+        </div>
+        <div id="samRecipientPickerWrap" style="display:none;margin-bottom:10px;">
+          <label>Recipients</label>
+          <div id="samRecipientPicker" style="max-height:160px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:8px;font-size:12.5px;"></div>
+        </div>
+        <label>Send Via</label>
+        <div style="display:flex;gap:16px;margin-bottom:10px;font-size:13px;">
+          <label style="display:flex;align-items:center;gap:5px;margin:0;font-weight:400;"><input type="checkbox" id="samEmail" checked style="width:auto;margin:0;"> Email</label>
+          <label style="display:flex;align-items:center;gap:5px;margin:0;font-weight:400;"><input type="checkbox" id="samSms" style="width:auto;margin:0;"> SMS</label>
+          <label style="display:flex;align-items:center;gap:5px;margin:0;font-weight:400;"><input type="checkbox" id="samWhatsapp" style="width:auto;margin:0;"> WhatsApp</label>
+        </div>
+        <label>Subject</label><input id="samSubject" placeholder="e.g. Scheduled maintenance this weekend">
+        <label>Message</label><textarea id="samBody" rows="4" placeholder="Use {{name}} to insert each Admin's name automatically."></textarea>
+        <button class="btn btn-gold" onclick="sendSuperAdminMessage()">Send Message</button>
+      </div>
+      <div class="card-x p3">
+        <div style="overflow:auto;">
+          <table class="tbl"><thead><tr><th>Sent</th><th>Type</th><th>Organisation</th><th>Channel</th><th>Status</th></tr></thead>
+          <tbody id="tblSamHistory"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ CONTACT & PAYMENT ============ -->
+    <div class="page" id="page-contact">
+      <div class="card-x p3 mb3">
+        <div class="section-title">Contact Details</div>
+        <div class="section-sub">Shown across the app, marketing site, and every email footer.</div>
+        <div class="grid2">
+          <div><label>Support Email</label><input id="cfgEmail"></div>
+          <div><label>Phone</label><input id="cfgPhone"></div>
+          <div><label>WhatsApp</label><input id="cfgWhatsapp"></div>
+          <div><label>Website</label><input id="cfgWebsite"></div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="saveContactConfig()">Save Contact Details</button>
+      </div>
+
+      <div class="card-x p3 mb3">
+        <div class="section-title">Manual Payment Methods (Bank Transfer)</div>
+        <div class="section-sub">Shown on every org's Upgrade &amp; Subscription tab. Add as many accounts as you like; disable one without deleting it.</div>
+        <div id="bankAccountsList"></div>
+        <button class="btn btn-outline btn-sm" onclick="addBankAccountRow()">+ Add Bank Account</button>
+        <button class="btn btn-gold btn-sm" onclick="saveBankAccounts()">Save Bank Accounts</button>
+      </div>
+
+      <div class="card-x p3">
+        <div class="section-title">Automatic Payment Gateways</div>
+        <div class="section-sub">Enter each provider's keys and toggle it on when ready. Secret keys are only ever shown here, never on org dashboards.</div>
+        <div id="gatewaysList"></div>
+        <button class="btn btn-gold btn-sm" onclick="saveGateways()">Save Gateways</button>
+      </div>
+    </div>
+
+    <!-- ============ BRANDING ============ -->
+    <div class="page" id="page-branding">
+      <div class="card-x p3">
+        <div class="section-title">Colors &amp; Logo</div>
+        <div class="section-sub">Applied across the login, signup, and app pages.</div>
+        <div class="grid3">
+          <div><label>Primary (Forest)</label><input type="color" id="brandPrimary" style="height:42px;padding:4px;"></div>
+          <div><label>Accent (Gold)</label><input type="color" id="brandGold" style="height:42px;padding:4px;"></div>
+          <div><label>Background (Cream)</label><input type="color" id="brandCream" style="height:42px;padding:4px;"></div>
+        </div>
+        <label>Logo URL</label><input id="brandLogoUrl" placeholder="https://…">
+        <button class="btn btn-gold btn-sm" onclick="saveBranding()">Save Branding</button>
+      </div>
+    </div>
+
+    <!-- ============ PRICING & PLANS ============ -->
+    <div class="page" id="page-plans">
+      <div class="card-x p3">
+        <div class="section-title">Plans</div>
+        <div class="section-sub">Shown on the Pricing page and inside every org's Upgrade &amp; Subscription tab.</div>
+        <div id="plansList"></div>
+        <button class="btn btn-outline btn-sm" onclick="addPlanCard()">+ Add Plan</button>
+        <button class="btn btn-gold btn-sm" onclick="savePlans()">Save Plans</button>
+      </div>
+    </div>
+
+    <!-- ============ REMINDERS ============ -->
+    <div class="page" id="page-reminders">
+      <div class="card-x p3">
+        <div class="section-title">Trial &amp; Subscription Reminders</div>
+        <div class="section-sub">Automatic emails to org Admins as their trial/subscription nears expiry — kept deliberately infrequent.</div>
+        <div class="grid2">
+          <div><label>Start reminding this many days before expiry</label><input type="number" id="remWindow" min="1" max="60"></div>
+          <div><label>Minimum days between reminder emails</label><input type="number" id="remGap" min="1" max="60"></div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="saveReminders()">Save Reminder Settings</button>
+      </div>
+    </div>
+
+    <!-- ============ MY ACCOUNT ============ -->
+    <div class="page" id="page-account">
+      <div class="card-x p3" style="max-width:420px;">
+        <div class="section-title">Change Password</div>
+        <div class="section-sub">Current username: <b id="acctUsername">—</b></div>
+        <label>Current Password</label><input type="password" id="acctOldPw">
+        <label>New Password</label><input type="password" id="acctNewPw">
+        <button class="btn btn-gold btn-sm" onclick="changeSuperAdminPassword()">Update Password</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Org detail / edit modal -->
+<div class="modal-backdrop" id="orgModalBackdrop">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div class="section-title" style="margin:0;">Edit Organisation</div>
+      <span class="close-x" onclick="closeOrgModal()">✕</span>
+    </div>
+    <input type="hidden" id="editOrgId">
+    <label>Organisation Name</label><input id="editOrgName">
+    <label>Admin Full Name</label><input id="editAdminFullName">
+    <label>Admin Email</label><input id="editAdminEmail">
+    <label>Admin Phone</label><input id="editAdminPhone">
+    <div class="grid2">
+      <div><label>Plan</label><select id="editPlan"></select></div>
+      <div><label>Billing Cycle</label><select id="editBillingCycle"><option>Monthly</option><option>Bi-Annually</option><option>Yearly</option></select></div>
+    </div>
+    <label>Subscription Expiry</label><input type="date" id="editExpiry">
+    <label style="display:flex;align-items:center;gap:6px;font-weight:400;"><input type="checkbox" id="editApplyUpgrade" style="width:auto;margin:0;"> Also extend expiry now by one full billing cycle from today (use for an off-platform/manual payment)</label>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+      <button class="btn btn-gold btn-sm" onclick="saveOrgEdits()">Save Changes</button>
+      <button class="btn btn-outline btn-sm" id="orgStatusToggleBtn" onclick="toggleOrgStatus()">Suspend Organisation</button>
+      <a class="btn btn-outline btn-sm" id="openSheetBtn" href="#" target="_blank">Open Spreadsheet</a>
+    </div>
+  </div>
+</div>
+
+<!-- Archive old records modal -->
+<div class="modal-backdrop" id="archiveModalBackdrop">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div class="section-title" style="margin:0;">Archive Old Records</div>
+      <span class="close-x" onclick="closeArchiveModal()">✕</span>
+    </div>
+    <p class="section-sub" id="archiveModalOrgLabel"></p>
+    <input type="hidden" id="archiveOrgId">
+    <label>Move records older than</label>
+    <select id="archiveCutoffMonths">
+      <option value="6">6 months</option>
+      <option value="12" selected>12 months</option>
+      <option value="24">24 months</option>
+      <option value="36">36 months</option>
+    </select>
+    <label>Record types to archive</label>
+    <div id="archiveEntityTypes" style="border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:10px;font-size:13px;"></div>
+    <p style="font-size:11.5px;color:var(--ink-soft);margin:0 0 10px;">
+      Moved into a dedicated archive spreadsheet for this org (created automatically, reused on future runs) and
+      removed from their live spreadsheet — this is what frees up cell capacity. Master data (products, customers,
+      suppliers, settings) is deliberately left out of this list since it isn't historical.
+    </p>
+    <button class="btn btn-gold btn-sm" onclick="runArchiveOldRecords()"><span id="archiveRunLabel">Archive Now</span></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- Config ---------- */
+const API_URL = window.OKV_API_URL || 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+async function sha256(text){
+  const enc = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+async function apiCall(action, payload){
+  const res = await fetch(API_URL, {
+    method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(Object.assign({ action }, payload)),
+  });
+  return res.json();
+}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ---------- Session ---------- */
+let SA_SESSION = null;
+try{ SA_SESSION = JSON.parse(localStorage.getItem('okv_ims_superadmin_session') || 'null'); }catch(e){ SA_SESSION = null; }
+if(!SA_SESSION){ window.location.href = 'login.html'; }
+
+function logoutSuperAdmin(){
+  apiCall('superAdminLogout', { sessionToken: SA_SESSION.sessionToken }).catch(()=>{});
+  localStorage.removeItem('okv_ims_superadmin_session');
+  window.location.href = 'login.html';
+}
+
+let TENANTS = [];
+let PLANS = [];
+let CONFIG = null;
+
+async function boot(){
+  const who = await apiCall('superAdminWhoAmI', { sessionToken: SA_SESSION.sessionToken });
+  if(!who.success){
+    localStorage.removeItem('okv_ims_superadmin_session');
+    window.location.href = 'login.html';
+    return;
+  }
+  document.getElementById('whoLabel').textContent = who.superAdmin.fullName || who.superAdmin.username;
+  document.getElementById('acctUsername').textContent = who.superAdmin.username;
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').classList.add('ready');
+
+  await Promise.all([loadTenants(), loadConfig()]);
+  renderOrgTable();
+  renderCapacityTab();
+}
+boot();
+
+/* ---------- Nav ---------- */
+document.querySelectorAll('.nav-item[data-target]').forEach(el => {
+  el.addEventListener('click', () => nav(el.dataset.target));
+});
+const PAGE_TITLES = {
+  orgs: 'Organizations', capacity: 'Capacity Monitor', messaging: 'Messaging',
+  contact: 'Contact & Payment', branding: 'Branding', plans: 'Pricing & Plans',
+  reminders: 'Reminders', account: 'My Account',
+};
+function nav(target){
+  document.querySelectorAll('.nav-item[data-target]').forEach(n => n.classList.toggle('active', n.dataset.target === target));
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + target));
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[target] || '';
+  if(target === 'capacity') renderCapacityTab();
+  if(target === 'messaging') { renderSamRecipientPicker(); loadSamHistory(); }
+}
+
+/* ---------- Organizations ---------- */
+async function loadTenants(){
+  const result = await apiCall('listTenants', { sessionToken: SA_SESSION.sessionToken });
+  if(result.success) TENANTS = result.tenants;
+}
+function daysLeftOf_(t){
+  if(!t.subscriptionExpiry) return null;
+  return Math.ceil((new Date(t.subscriptionExpiry) - new Date()) / (1000*60*60*24));
+}
+function renderOrgTable(){
+  const q = (document.getElementById('orgSearch').value || '').toLowerCase();
+  const rows = TENANTS.filter(t =>
+    !q || (t.orgName||'').toLowerCase().includes(q) || (t.adminFullName||'').toLowerCase().includes(q) || (t.adminEmail||'').toLowerCase().includes(q)
+  );
+  document.getElementById('tblOrgs').innerHTML = rows.map(t => {
+    const days = daysLeftOf_(t);
+    const subLabel = days === null ? '—' : days <= 0 ? '<span class="badge b-danger">Expired</span>' : days <= 7 ? '<span class="badge b-warn">'+days+'d left</span>' : '<span class="badge b-ok">'+days+'d left</span>';
+    return `<tr>
+      <td><b>${t.orgName}</b></td>
+      <td>${t.adminFullName||''}</td>
+      <td style="font-size:12px;">${t.adminEmail||''}<br>${t.adminPhone||''}</td>
+      <td>${t.plan} <span style="color:var(--ink-soft);">(${t.billingCycle})</span></td>
+      <td>${subLabel}</td>
+      <td><span class="badge ${t.orgStatus==='Suspended'?'b-danger':'b-ok'}">${t.orgStatus}</span></td>
+      <td><button class="btn btn-outline btn-sm" onclick="openOrgModal('${t.orgId}')">Manage</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--ink-soft);padding:20px;">No organisations yet.</td></tr>';
+}
+function openOrgModal(orgId){
+  const t = TENANTS.find(x => x.orgId === orgId);
+  if(!t) return;
+  document.getElementById('editOrgId').value = t.orgId;
+  document.getElementById('editOrgName').value = t.orgName || '';
+  document.getElementById('editAdminFullName').value = t.adminFullName || '';
+  document.getElementById('editAdminEmail').value = t.adminEmail || '';
+  document.getElementById('editAdminPhone').value = t.adminPhone || '';
+  const planSel = document.getElementById('editPlan');
+  planSel.innerHTML = PLANS.map(p => `<option value="${p.id}" ${p.id===t.plan?'selected':''}>${p.name}</option>`).join('');
+  document.getElementById('editBillingCycle').value = t.billingCycle || 'Monthly';
+  document.getElementById('editExpiry').value = t.subscriptionExpiry ? t.subscriptionExpiry.slice(0,10) : '';
+  document.getElementById('editApplyUpgrade').checked = false;
+  document.getElementById('orgStatusToggleBtn').textContent = t.orgStatus === 'Suspended' ? 'Reactivate Organisation' : 'Suspend Organisation';
+  document.getElementById('openSheetBtn').href = 'https://docs.google.com/spreadsheets/d/' + t.spreadsheetId + '/edit';
+  document.getElementById('orgModalBackdrop').classList.add('show');
+}
+function closeOrgModal(){ document.getElementById('orgModalBackdrop').classList.remove('show'); }
+async function saveOrgEdits(){
+  const orgId = document.getElementById('editOrgId').value;
+  const payload = {
+    sessionToken: SA_SESSION.sessionToken, orgId,
+    orgName: document.getElementById('editOrgName').value,
+    adminFullName: document.getElementById('editAdminFullName').value,
+    adminEmail: document.getElementById('editAdminEmail').value,
+    adminPhone: document.getElementById('editAdminPhone').value,
+    plan: document.getElementById('editPlan').value,
+    billingCycle: document.getElementById('editBillingCycle').value,
+    applyUpgrade: document.getElementById('editApplyUpgrade').checked,
+  };
+  const expiryVal = document.getElementById('editExpiry').value;
+  if(expiryVal && !payload.applyUpgrade) payload.subscriptionExpiry = new Date(expiryVal + 'T23:59:59').toISOString();
+  const result = await apiCall('updateTenant', payload);
+  if(!result.success){ toast(result.error || 'Could not save.'); return; }
+  toast('Organisation updated.');
+  closeOrgModal();
+  await loadTenants(); renderOrgTable();
+}
+async function toggleOrgStatus(){
+  const orgId = document.getElementById('editOrgId').value;
+  const t = TENANTS.find(x => x.orgId === orgId);
+  const newStatus = t.orgStatus === 'Suspended' ? 'Active' : 'Suspended';
+  const result = await apiCall('setTenantStatus', { sessionToken: SA_SESSION.sessionToken, orgId, status: newStatus });
+  if(!result.success){ toast(result.error || 'Could not update status.'); return; }
+  toast('Organisation ' + (newStatus === 'Suspended' ? 'suspended' : 'reactivated') + '.');
+  closeOrgModal();
+  await loadTenants(); renderOrgTable();
+}
+
+/* ---------- Capacity Monitor ---------- */
+async function renderCapacityTab(){
+  const result = await apiCall('getCapacityDashboard', { sessionToken: SA_SESSION.sessionToken });
+  const tbl = document.getElementById('tblCapacity');
+  if(!result.success){ tbl.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--ink-soft);padding:20px;">${result.error||'Could not load.'}</td></tr>`; return; }
+  const statusBadge = s => s === 'Action Needed' ? '<span class="badge b-danger">Action Needed</span>' : s === 'Monitor' ? '<span class="badge b-warn">Monitor</span>' : '<span class="badge b-ok">Healthy</span>';
+  const timeLabel = t => {
+    if(t.estDaysToCapacity90 === null || t.estDaysToCapacity90 === undefined) return 'Not enough history yet';
+    const d = t.estDaysToCapacity90;
+    if(d <= 0) return 'Imminent';
+    if(d < 60) return d + ' days';
+    if(d < 730) return Math.round(d/30) + ' months';
+    return Math.round(d/365) + ' years';
+  };
+  tbl.innerHTML = result.tenants.map(t => `
+    <tr><td><b>${t.orgName}</b>${t.capacityCheckedAt ? '<br><span style="font-size:11px;color:var(--ink-soft);">Checked '+new Date(t.capacityCheckedAt).toLocaleDateString()+'</span>' : ''}</td>
+    <td>${t.cellUsagePercent}%</td><td>${timeLabel(t)}</td><td>${statusBadge(t.capacityStatus)}</td>
+    <td style="font-size:12px;color:var(--ink-soft);max-width:280px;">${t.capacityRecommendation || '—'}</td>
+    <td><button class="btn btn-outline btn-sm" onclick="openArchiveModal('${t.orgId}','${(t.orgName||'').replace(/'/g,"\\'")}')">Archive Old Records</button></td></tr>`
+  ).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--ink-soft);padding:20px;">No data yet — the daily check hasn\'t run. Try "Run Check Now".</td></tr>';
+}
+async function runCapacityCheckNow(){
+  const label = document.getElementById('capCheckLabel');
+  label.textContent = 'Checking…';
+  const result = await apiCall('runCapacityCheckNow', { sessionToken: SA_SESSION.sessionToken });
+  label.textContent = 'Run Check Now';
+  if(!result.success){ toast(result.error || 'Check failed.'); return; }
+  toast(result.alertCount ? result.alertCount + ' org(s) just crossed Action Needed — alert email sent.' : 'Check complete — nothing crossed a new threshold.');
+  renderCapacityTab();
+}
+
+/* -- Archive Old Records (turns the recommendation text into a real action) -- */
+// Deliberately excludes master/reference data (products, customers,
+// suppliers, settings, categories) — only historical/transactional
+// records are safe to move out of the live spreadsheet.
+const ARCHIVABLE_ENTITY_TYPES = [
+  'stockIn', 'stockOut', 'salesOrders', 'purchaseOrders', 'adjustments',
+  'expenses', 'batches',
+];
+function openArchiveModal(orgId, orgName){
+  document.getElementById('archiveOrgId').value = orgId;
+  document.getElementById('archiveModalOrgLabel').textContent = orgName;
+  document.getElementById('archiveCutoffMonths').value = '12';
+  document.getElementById('archiveEntityTypes').innerHTML = ARCHIVABLE_ENTITY_TYPES.map(et => `
+    <label style="display:flex;align-items:center;gap:6px;padding:2px 0;font-weight:400;">
+      <input type="checkbox" class="archiveEntityChk" value="${et}" checked style="width:auto;margin:0;"> ${et}
+    </label>`).join('');
+  document.getElementById('archiveModalBackdrop').classList.add('show');
+}
+function closeArchiveModal(){ document.getElementById('archiveModalBackdrop').classList.remove('show'); }
+async function runArchiveOldRecords(){
+  const orgId = document.getElementById('archiveOrgId').value;
+  const cutoffMonths = +document.getElementById('archiveCutoffMonths').value;
+  const entityTypes = [...document.querySelectorAll('.archiveEntityChk:checked')].map(c => c.value);
+  if(!entityTypes.length){ toast('Choose at least one record type.'); return; }
+  const label = document.getElementById('archiveRunLabel');
+  label.textContent = 'Archiving…';
+  const result = await apiCall('archiveOldRecords', { sessionToken: SA_SESSION.sessionToken, orgId, cutoffMonths, entityTypes });
+  label.textContent = 'Archive Now';
+  if(!result.success){ toast(result.error || 'Could not archive.'); return; }
+  if(!result.archived){ toast(result.message || 'Nothing matched that cutoff.'); return; }
+  toast(`Archived ${result.archived} record(s). New usage: ${result.newCellUsagePercent}% (${result.newCapacityStatus}).`);
+  closeArchiveModal();
+  renderCapacityTab();
+}
+
+/* ---------- Messaging ---------- */
+function renderSamRecipientPicker(){
+  const audience = document.getElementById('samAudience').value;
+  const wrap = document.getElementById('samRecipientPickerWrap');
+  if(audience !== 'selected'){ wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  document.getElementById('samRecipientPicker').innerHTML = TENANTS.map(t => `
+    <label style="display:flex;align-items:center;gap:6px;padding:3px 0;font-weight:400;">
+      <input type="checkbox" class="samRecipientChk" value="${t.orgId}" style="width:auto;margin:0;"> ${t.orgName} <span style="color:var(--ink-soft);">(${t.adminEmail})</span>
+    </label>`).join('') || '<div style="color:var(--ink-soft);">No organisations yet.</div>';
+}
+function samAudienceRecipients_(){
+  const audience = document.getElementById('samAudience').value;
+  if(audience === 'all') return TENANTS;
+  if(audience === 'expiringSoon') return TENANTS.filter(t => { const d = daysLeftOf_(t); return d !== null && d > 0 && d <= 14; });
+  if(audience === 'expired') return TENANTS.filter(t => { const d = daysLeftOf_(t); return d !== null && d <= 0; });
+  const ids = [...document.querySelectorAll('.samRecipientChk:checked')].map(i => i.value);
+  return TENANTS.filter(t => ids.includes(t.orgId));
+}
+async function sendSuperAdminMessage(){
+  const recipients = samAudienceRecipients_().map(t => ({ orgId: t.orgId, name: t.adminFullName || t.orgName, email: t.adminEmail, phone: t.adminPhone }));
+  if(!recipients.length){ toast('No matching organisations for that audience.'); return; }
+  const channels = [];
+  if(document.getElementById('samEmail').checked) channels.push('email');
+  if(document.getElementById('samSms').checked) channels.push('sms');
+  if(document.getElementById('samWhatsapp').checked) channels.push('whatsapp');
+  if(!channels.length){ toast('Choose at least one channel.'); return; }
+  const body = document.getElementById('samBody').value.trim();
+  if(!body){ toast('Write a message first.'); return; }
+  const result = await apiCall('sendSuperAdminMessage', {
+    sessionToken: SA_SESSION.sessionToken, msgType: document.getElementById('samType').value,
+    audience: document.getElementById('samAudience').value,
+    subject: document.getElementById('samSubject').value || 'A message from OKV Technology Consults',
+    body, channels, recipients,
+  });
+  if(!result.success){ toast(result.error || 'Could not send.'); return; }
+  const sent = result.results.filter(r => r.status === 'sent').length;
+  toast(`Sent to ${sent} recipient(s).`);
+  document.getElementById('samBody').value = ''; document.getElementById('samSubject').value = '';
+  loadSamHistory();
+}
+async function loadSamHistory(){
+  const result = await apiCall('listSuperAdminMessages', { sessionToken: SA_SESSION.sessionToken });
+  const tbl = document.getElementById('tblSamHistory');
+  if(!result.success){ tbl.innerHTML = ''; return; }
+  const statusPill = s => s==='sent' ? '<span class="badge b-ok">Sent</span>' : s==='not_configured' ? '<span class="badge b-warn">Gateway not set up</span>' : '<span class="badge b-danger">Failed</span>';
+  tbl.innerHTML = result.messages.map(m => `
+    <tr><td style="font-size:11.5px;">${new Date(m.sentAt).toLocaleString()}</td><td>${m.msgType}</td>
+    <td>${m.recipientName}</td><td style="text-transform:capitalize;">${m.channel}</td><td>${statusPill(m.status)}</td></tr>`
+  ).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--ink-soft);padding:16px;">No messages sent yet.</td></tr>';
+}
+
+/* ---------- System Config ---------- */
+async function loadConfig(){
+  const result = await apiCall('getSystemConfig', { sessionToken: SA_SESSION.sessionToken });
+  if(!result.success){ toast(result.error || 'Could not load settings.'); return; }
+  CONFIG = result;
+  PLANS = result.plans || [];
+
+  document.getElementById('cfgEmail').value = result.contact.email || '';
+  document.getElementById('cfgPhone').value = result.contact.phone || '';
+  document.getElementById('cfgWhatsapp').value = result.contact.whatsapp || '';
+  document.getElementById('cfgWebsite').value = result.contact.website || '';
+
+  renderBankAccounts(result.bankAccounts || []);
+  renderGateways(result.gateways || {});
+
+  document.getElementById('brandPrimary').value = result.branding.primaryColor || '#1F3D2B';
+  document.getElementById('brandGold').value = result.branding.goldColor || '#C9A24B';
+  document.getElementById('brandCream').value = result.branding.creamColor || '#F6F1E7';
+  document.getElementById('brandLogoUrl').value = result.branding.logoUrl || '';
+
+  renderPlans(result.plans || []);
+
+  document.getElementById('remWindow').value = (result.reminders && result.reminders.windowDays) || 14;
+  document.getElementById('remGap').value = (result.reminders && result.reminders.minGapDays) || 14;
+}
+async function saveContactConfig(){
+  const value = {
+    email: document.getElementById('cfgEmail').value.trim(),
+    phone: document.getElementById('cfgPhone').value.trim(),
+    whatsapp: document.getElementById('cfgWhatsapp').value.trim(),
+    website: document.getElementById('cfgWebsite').value.trim(),
+  };
+  const result = await apiCall('updateSystemConfig', { sessionToken: SA_SESSION.sessionToken, key: 'contact', value });
+  toast(result.success ? 'Contact details saved.' : (result.error || 'Could not save.'));
+}
+
+/* -- Bank accounts (manual payment methods) -- */
+let bankAccountsState = [];
+function renderBankAccounts(list){
+  bankAccountsState = list.map(b => Object.assign({}, b));
+  drawBankAccounts();
+}
+function drawBankAccounts(){
+  document.getElementById('bankAccountsList').innerHTML = bankAccountsState.map((b, i) => `
+    <div class="plan-card">
+      <div class="grid3">
+        <div><label>Bank Name</label><input value="${b.bankName||''}" oninput="bankAccountsState[${i}].bankName=this.value"></div>
+        <div><label>Account Number</label><input value="${b.accountNumber||''}" oninput="bankAccountsState[${i}].accountNumber=this.value"></div>
+        <div><label>Account Name</label><input value="${b.accountName||''}" oninput="bankAccountsState[${i}].accountName=this.value"></div>
+      </div>
+      <label style="display:flex;align-items:center;gap:6px;font-weight:400;">
+        <input type="checkbox" ${b.enabled!==false?'checked':''} style="width:auto;margin:0;" onchange="bankAccountsState[${i}].enabled=this.checked"> Enabled (visible to orgs)
+        <button class="btn btn-danger btn-sm" style="margin-left:auto;" onclick="removeBankAccount(${i})">Remove</button>
+      </label>
+    </div>`).join('') || '<p style="color:var(--ink-soft);font-size:13px;">No bank accounts yet — add one below.</p>';
+}
+function addBankAccountRow(){ bankAccountsState.push({ bankName:'', accountNumber:'', accountName:'', enabled:true }); drawBankAccounts(); }
+function removeBankAccount(i){ bankAccountsState.splice(i,1); drawBankAccounts(); }
+async function saveBankAccounts(){
+  const result = await apiCall('updateSystemConfig', { sessionToken: SA_SESSION.sessionToken, key: 'bankAccounts', value: bankAccountsState });
+  toast(result.success ? 'Bank accounts saved.' : (result.error || 'Could not save.'));
+}
+
+/* -- Payment gateways -- */
+let gatewaysState = {};
+const GATEWAY_FIELDS = {
+  paystack: [['publicKey','Public Key'],['secretKey','Secret Key']],
+  remita: [['merchantId','Merchant ID'],['apiKey','API Key'],['serviceTypeId','Service Type ID']],
+  flutterwave: [['publicKey','Public Key'],['secretKey','Secret Key']],
+};
+const GATEWAY_LABELS = { paystack: 'Paystack', remita: 'Remita', flutterwave: 'Flutterwave' };
+function renderGateways(gw){
+  gatewaysState = JSON.parse(JSON.stringify(gw));
+  Object.keys(GATEWAY_FIELDS).forEach(k => { if(!gatewaysState[k]) gatewaysState[k] = { enabled:false }; });
+  drawGateways();
+}
+function drawGateways(){
+  document.getElementById('gatewaysList').innerHTML = Object.keys(GATEWAY_FIELDS).map(key => {
+    const g = gatewaysState[key] || {};
+    const fields = GATEWAY_FIELDS[key].map(([f, label]) =>
+      `<div><label>${label}</label><input value="${g[f]||''}" oninput="gatewaysState['${key}']['${f}']=this.value"></div>`
+    ).join('');
+    return `<div class="plan-card">
+      <label style="display:flex;align-items:center;gap:6px;font-weight:700;color:var(--forest-3);">
+        <input type="checkbox" ${g.enabled?'checked':''} style="width:auto;margin:0;" onchange="gatewaysState['${key}'].enabled=this.checked"> ${GATEWAY_LABELS[key]}
+      </label>
+      <div class="grid2" style="margin-top:8px;">${fields}</div>
+    </div>`;
+  }).join('');
+}
+async function saveGateways(){
+  const result = await apiCall('updateSystemConfig', { sessionToken: SA_SESSION.sessionToken, key: 'gateways', value: gatewaysState });
+  toast(result.success ? 'Payment gateways saved.' : (result.error || 'Could not save.'));
+}
+
+/* -- Branding -- */
+async function saveBranding(){
+  const value = {
+    primaryColor: document.getElementById('brandPrimary').value,
+    goldColor: document.getElementById('brandGold').value,
+    creamColor: document.getElementById('brandCream').value,
+    logoUrl: document.getElementById('brandLogoUrl').value.trim(),
+  };
+  const result = await apiCall('updateSystemConfig', { sessionToken: SA_SESSION.sessionToken, key: 'branding', value });
+  toast(result.success ? 'Branding saved — applies across the app next time each page loads.' : (result.error || 'Could not save.'));
+}
+
+/* -- Plans & pricing -- */
+let plansState = [];
+function renderPlans(list){
+  plansState = list.map(p => Object.assign({}, p, { features: (p.features||[]).slice() }));
+  drawPlans();
+}
+function drawPlans(){
+  document.getElementById('plansList').innerHTML = plansState.map((p, i) => `
+    <div class="plan-card">
+      <div class="grid2">
+        <div><label>Plan ID</label><input value="${p.id||''}" oninput="plansState[${i}].id=this.value"></div>
+        <div><label>Display Name</label><input value="${p.name||''}" oninput="plansState[${i}].name=this.value"></div>
+      </div>
+      <div class="grid3">
+        <div><label>Monthly (₦)</label><input type="number" value="${p.monthlyPrice||0}" oninput="plansState[${i}].monthlyPrice=+this.value"></div>
+        <div><label>Bi-Annual (₦)</label><input type="number" value="${p.biannualPrice||0}" oninput="plansState[${i}].biannualPrice=+this.value"></div>
+        <div><label>Yearly (₦)</label><input type="number" value="${p.yearlyPrice||0}" oninput="plansState[${i}].yearlyPrice=+this.value"></div>
+      </div>
+      <label>Features (one per line)</label>
+      <textarea rows="3" oninput="plansState[${i}].features=this.value.split('\\n').map(s=>s.trim()).filter(Boolean)">${(p.features||[]).join('\n')}</textarea>
+      <button class="btn btn-danger btn-sm" onclick="removePlan(${i})">Remove Plan</button>
+    </div>`).join('');
+}
+function addPlanCard(){ plansState.push({ id:'', name:'', monthlyPrice:0, biannualPrice:0, yearlyPrice:0, features:[] }); drawPlans(); }
+function removePlan(i){ plansState.splice(i,1); drawPlans(); }
+async function savePlans(){
+  const result = await apiCall('updateSystemConfig', { sessionToken: SA_SESSION.sessionToken, key: 'plans', value: plansState });
+  toast(result.success ? 'Plans saved.' : (result.error || 'Could not save.'));
+  if(result.success){ PLANS = plansState; }
+}
+
+/* -- Reminders -- */
+async function saveReminders(){
+  const value = { windowDays: +document.getElementById('remWindow').value || 14, minGapDays: +document.getElementById('remGap').value || 14 };
+  const result = await apiCall('updateSystemConfig', { sessionToken: SA_SESSION.sessionToken, key: 'reminders', value });
+  toast(result.success ? 'Reminder settings saved.' : (result.error || 'Could not save.'));
+}
+
+/* -- My Account -- */
+async function changeSuperAdminPassword(){
+  const oldPw = document.getElementById('acctOldPw').value;
+  const newPw = document.getElementById('acctNewPw').value;
+  if(!oldPw || !newPw){ toast('Fill in both fields.'); return; }
+  const oldPasswordHash = await sha256(oldPw);
+  const newPasswordHash = await sha256(newPw);
+  const result = await apiCall('superAdminChangePassword', { sessionToken: SA_SESSION.sessionToken, oldPasswordHash, newPasswordHash });
+  if(!result.success){ toast(result.error || 'Could not change password.'); return; }
+  toast('Password updated.');
+  document.getElementById('acctOldPw').value = ''; document.getElementById('acctNewPw').value = '';
+}
+</script>
+<style>
+.pw-toggle-wrap{position:relative;}
+.pw-toggle-wrap input[type="password"],.pw-toggle-wrap input[type="text"].pw-toggled{padding-right:40px !important;}
+.pw-toggle-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:none;
+  cursor:pointer;padding:4px 6px;line-height:0;color:#6b7a70;}
+.pw-toggle-btn:hover{color:#1C2620;}
+.pw-toggle-btn svg{width:18px;height:18px;display:block;}
+</style>
+<script>
+(function(){
+  var EYE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  var EYE_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.3 21.3 0 0 1 5.06-5.94M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 7 11 7a21.4 21.4 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  function wrapOne(inp){
+    if(inp.dataset.pwWrapped) return;
+    inp.dataset.pwWrapped='1';
+    var wrap=document.createElement('div');
+    wrap.className='pw-toggle-wrap';
+    inp.parentNode.insertBefore(wrap,inp);
+    wrap.appendChild(inp);
+    var btn=document.createElement('button');
+    btn.type='button';
+    btn.className='pw-toggle-btn';
+    btn.setAttribute('aria-label','Show password');
+    btn.innerHTML=EYE;
+    btn.addEventListener('click',function(){
+      var showing = inp.type==='text';
+      inp.type = showing ? 'password' : 'text';
+      inp.classList.toggle('pw-toggled', !showing);
+      btn.innerHTML = showing ? EYE : EYE_OFF;
+      btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+    });
+    wrap.appendChild(btn);
+  }
+  function scan(){ document.querySelectorAll('input[type="password"]').forEach(wrapOne); }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',scan); } else { scan(); }
+  // Re-scan on a short interval briefly after load to catch fields rendered
+  // dynamically by JS (modals, tabs) without needing a change in every call site.
+  var tries=0;
+  var iv=setInterval(function(){ scan(); if(++tries>20) clearInterval(iv); },500);
+  window.pwToggleRescan = scan;
+})();
+</script>
+
+</body>
+</html>

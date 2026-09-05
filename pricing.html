@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing — OKV Inventory Management System</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0B4F3A">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+  :root{
+    --forest:#0B4F3A; --forest-2:#0E5F46; --forest-3:#123B2C;
+    --cream:#FBF7EE; --gold:#C99A3E; --gold-soft:#F3E3BE;
+    --ink:#1C2620; --ink-soft:#5C6B62; --line:#E7E1D2; --ok:#2F7D5A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--cream);color:var(--ink);}
+  a{text-decoration:none;}
+  header{background:var(--forest);color:#fff;padding:0;}
+  .topnav{max-width:1100px;margin:0 auto;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;}
+  .brand{display:flex;align-items:center;gap:10px;color:#fff;}
+  .mark{width:36px;height:36px;border-radius:9px;background:var(--gold);display:flex;align-items:center;justify-content:center;
+    font-family:Georgia,'Palatino Linotype',serif;font-weight:700;color:var(--forest-3);font-size:11px;letter-spacing:-.5px;}
+  .brand-name{font-family:Georgia,'Palatino Linotype',serif;font-weight:700;font-size:15px;}
+  .topnav .links{display:flex;gap:18px;align-items:center;}
+  .topnav .links a{color:#D9E6DC;font-size:13.5px;font-weight:600;}
+  .topnav .links a.cta{background:var(--gold);color:var(--forest-3);padding:9px 16px;border-radius:9px;}
+
+  .hero{text-align:center;padding:50px 22px 20px;max-width:720px;margin:0 auto;}
+  .hero h1{font-family:Georgia,'Palatino Linotype',serif;font-size:32px;margin:0 0 12px;color:var(--forest-3);}
+  .hero p{color:var(--ink-soft);font-size:15.5px;line-height:1.6;}
+  .guarantee{display:inline-flex;align-items:center;gap:8px;background:var(--gold-soft);color:#8A6414;
+    border-radius:20px;padding:8px 18px;font-size:13px;font-weight:700;margin-top:10px;}
+
+  .cycle-tabs{display:flex;justify-content:center;gap:8px;margin:32px auto 8px;flex-wrap:wrap;}
+  .cycle-tab{padding:10px 20px;border-radius:10px;border:1.5px solid var(--line);background:#fff;
+    font-size:13.5px;font-weight:700;color:var(--ink-soft);cursor:pointer;font-family:inherit;}
+  .cycle-tab.active{background:var(--forest);color:#fff;border-color:var(--forest);}
+  .cycle-tab .save{display:block;font-size:10.5px;font-weight:600;color:var(--ok);margin-top:2px;}
+  .cycle-tab.active .save{color:#B9E0C9;}
+
+  .plans-wrap{display:none;max-width:900px;margin:30px auto 0;padding:0 22px 60px;}
+  .plans-wrap.active{display:block;}
+  .plans{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  @media(max-width:700px){ .plans{grid-template-columns:1fr;} }
+  .plan{background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px 26px;position:relative;}
+  .plan.featured{border:2px solid var(--gold);box-shadow:0 16px 40px rgba(201,154,62,.18);}
+  .plan .ribbon{position:absolute;top:-13px;right:24px;background:var(--gold);color:var(--forest-3);
+    font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;}
+  .plan .tier-name{font-family:Georgia,'Palatino Linotype',serif;font-size:21px;color:var(--forest-3);margin:0 0 4px;}
+  .plan .for-who{font-size:12.5px;color:var(--ink-soft);margin-bottom:18px;min-height:32px;}
+  .plan .price{font-size:34px;font-weight:800;color:var(--forest);margin-bottom:2px;}
+  .plan .price span{font-size:14px;font-weight:600;color:var(--ink-soft);}
+  .plan .price-sub{font-size:12px;color:var(--ink-soft);margin-bottom:20px;}
+  .plan ul{list-style:none;margin:0 0 24px;padding:0;}
+  .plan li{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:var(--ink);padding:6px 0;line-height:1.4;}
+  .plan li .tick{color:var(--ok);font-weight:800;flex-shrink:0;}
+  .plan .btn{display:block;text-align:center;width:100%;padding:13px;border-radius:11px;font-weight:700;
+    font-size:14.5px;cursor:pointer;border:none;font-family:inherit;}
+  .plan.featured .btn{background:var(--gold);color:var(--forest-3);}
+  .plan:not(.featured) .btn{background:var(--forest);color:#fff;}
+  .trial-line{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:10px;}
+
+  .faq-mini{max-width:700px;margin:0 auto 60px;padding:0 22px;}
+  .faq-mini h2{font-family:Georgia,'Palatino Linotype',serif;text-align:center;color:var(--forest-3);font-size:22px;margin-bottom:20px;}
+  details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-bottom:10px;}
+  summary{font-weight:700;font-size:14px;cursor:pointer;color:var(--forest-3);}
+  details p{font-size:13.5px;color:var(--ink-soft);margin:10px 0 0;line-height:1.6;}
+
+  .final-cta{background:var(--forest);color:#fff;text-align:center;padding:56px 22px;}
+  .final-cta h2{font-family:Georgia,'Palatino Linotype',serif;font-size:24px;margin:0 0 12px;}
+  .final-cta p{color:#D9E6DC;font-size:14px;margin-bottom:22px;}
+  .final-cta a.cta{background:var(--gold);color:var(--forest-3);padding:14px 28px;border-radius:12px;font-weight:700;font-size:15px;}
+
+  footer{background:var(--forest-3);color:#B9CFC2;text-align:center;padding:24px;font-size:12px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="topnav">
+    <a class="brand" href="index.html"><div class="mark">OKV</div><div class="brand-name">OKV Inventory Management System</div></a>
+    <div class="links">
+      <a href="index.html">Home</a>
+      <a href="demo.html">Live Demo</a>
+      <a href="login.html">Log In</a>
+      <a class="cta" href="pricing.html">Start Free Trial</a>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Simple pricing. No surprises.</h1>
+  <p>Every plan starts with a full-access, 7-day free trial — no card required. Pick the tier that matches your team, and change anytime.</p>
+  <div class="guarantee">🛡️ 30-Day Money-Back Guarantee on every plan</div>
+</div>
+
+<div class="cycle-tabs">
+  <button class="cycle-tab active" data-cycle="monthly" onclick="showCycle('monthly')">Monthly</button>
+  <button class="cycle-tab" data-cycle="biannual" onclick="showCycle('biannual')">Bi-Annually <span class="save">Save ~17%</span></button>
+  <button class="cycle-tab" data-cycle="yearly" onclick="showCycle('yearly')">Yearly <span class="save">Save ~25%</span></button>
+</div>
+
+<!-- MONTHLY -->
+<div class="plans-wrap active" id="wrap-monthly">
+  <div class="plans">
+    <div class="plan">
+      <div class="tier-name">Starter</div>
+      <div class="for-who">Best for a single shop with one till and a small team just getting started.</div>
+      <div class="price">₦15,000<span>/month</span></div>
+      <div class="price-sub">Billed monthly</div>
+      <ul>
+        <li><span class="tick">✓</span> Up to 3 team members</li>
+        <li><span class="tick">✓</span> Products, Inventory, Stock In/Out</li>
+        <li><span class="tick">✓</span> Sales Entry (POS) &amp; receipts</li>
+        <li><span class="tick">✓</span> Suppliers &amp; Customers</li>
+        <li><span class="tick">✓</span> Dashboard &amp; basic reports</li>
+        <li><span class="tick">✓</span> Cloud sync across devices</li>
+        <li><span class="tick">✓</span> Email support</li>
+      </ul>
+      <button class="btn" onclick="startFree('Starter','Monthly','₦15,000/month')">Start for Free</button>
+      <div class="trial-line">7 days free, then ₦15,000/month</div>
+    </div>
+    <div class="plan featured">
+      <div class="ribbon">Most Popular</div>
+      <div class="tier-name">Growth</div>
+      <div class="for-who">Best for growing businesses with multiple staff, branches, or remote oversight needs.</div>
+      <div class="price">₦30,000<span>/month</span></div>
+      <div class="price-sub">Billed monthly</div>
+      <ul>
+        <li><span class="tick">✓</span> Unlimited team members, all 7 roles</li>
+        <li><span class="tick">✓</span> Everything in Starter, plus:</li>
+        <li><span class="tick">✓</span> Purchase &amp; Sales Orders</li>
+        <li><span class="tick">✓</span> Reorder Alerts, Adjustments, Batch &amp; Expiry</li>
+        <li><span class="tick">✓</span> Expenses &amp; full Profit &amp; Loss</li>
+        <li><span class="tick">✓</span> Advanced Reports (Daily/Weekly/Monthly/Yearly)</li>
+        <li><span class="tick">✓</span> Barcode scanning &amp; receipt printing</li>
+        <li><span class="tick">✓</span> Backup &amp; restore, priority support</li>
+      </ul>
+      <button class="btn" onclick="startFree('Growth','Monthly','₦30,000/month')">Start for Free</button>
+      <div class="trial-line">7 days free, then ₦30,000/month</div>
+    </div>
+  </div>
+</div>
+
+<!-- BI-ANNUAL -->
+<div class="plans-wrap" id="wrap-biannual">
+  <div class="plans">
+    <div class="plan">
+      <div class="tier-name">Starter</div>
+      <div class="for-who">Best for a single shop with one till and a small team just getting started.</div>
+      <div class="price">₦75,000<span>/6 months</span></div>
+      <div class="price-sub">≈ ₦12,500/month — save ~17% vs monthly</div>
+      <ul>
+        <li><span class="tick">✓</span> Up to 3 team members</li>
+        <li><span class="tick">✓</span> Products, Inventory, Stock In/Out</li>
+        <li><span class="tick">✓</span> Sales Entry (POS) &amp; receipts</li>
+        <li><span class="tick">✓</span> Suppliers &amp; Customers</li>
+        <li><span class="tick">✓</span> Dashboard &amp; basic reports</li>
+        <li><span class="tick">✓</span> Cloud sync across devices</li>
+        <li><span class="tick">✓</span> Email support</li>
+      </ul>
+      <button class="btn" onclick="startFree('Starter','Bi-Annually','₦75,000/6 months')">Start for Free</button>
+      <div class="trial-line">7 days free, then ₦75,000 every 6 months</div>
+    </div>
+    <div class="plan featured">
+      <div class="ribbon">Most Popular</div>
+      <div class="tier-name">Growth</div>
+      <div class="for-who">Best for growing businesses with multiple staff, branches, or remote oversight needs.</div>
+      <div class="price">₦150,000<span>/6 months</span></div>
+      <div class="price-sub">≈ ₦25,000/month — save ~17% vs monthly</div>
+      <ul>
+        <li><span class="tick">✓</span> Unlimited team members, all 7 roles</li>
+        <li><span class="tick">✓</span> Everything in Starter, plus:</li>
+        <li><span class="tick">✓</span> Purchase &amp; Sales Orders</li>
+        <li><span class="tick">✓</span> Reorder Alerts, Adjustments, Batch &amp; Expiry</li>
+        <li><span class="tick">✓</span> Expenses &amp; full Profit &amp; Loss</li>
+        <li><span class="tick">✓</span> Advanced Reports (Daily/Weekly/Monthly/Yearly)</li>
+        <li><span class="tick">✓</span> Barcode scanning &amp; receipt printing</li>
+        <li><span class="tick">✓</span> Backup &amp; restore, priority support</li>
+      </ul>
+      <button class="btn" onclick="startFree('Growth','Bi-Annually','₦150,000/6 months')">Start for Free</button>
+      <div class="trial-line">7 days free, then ₦150,000 every 6 months</div>
+    </div>
+  </div>
+</div>
+
+<!-- YEARLY -->
+<div class="plans-wrap" id="wrap-yearly">
+  <div class="plans">
+    <div class="plan">
+      <div class="tier-name">Starter</div>
+      <div class="for-who">Best for a single shop with one till and a small team just getting started.</div>
+      <div class="price">₦135,000<span>/year</span></div>
+      <div class="price-sub">≈ ₦11,250/month — save ~25% vs monthly</div>
+      <ul>
+        <li><span class="tick">✓</span> Up to 3 team members</li>
+        <li><span class="tick">✓</span> Products, Inventory, Stock In/Out</li>
+        <li><span class="tick">✓</span> Sales Entry (POS) &amp; receipts</li>
+        <li><span class="tick">✓</span> Suppliers &amp; Customers</li>
+        <li><span class="tick">✓</span> Dashboard &amp; basic reports</li>
+        <li><span class="tick">✓</span> Cloud sync across devices</li>
+        <li><span class="tick">✓</span> Email support</li>
+      </ul>
+      <button class="btn" onclick="startFree('Starter','Yearly','₦135,000/year')">Start for Free</button>
+      <div class="trial-line">7 days free, then ₦135,000/year</div>
+    </div>
+    <div class="plan featured">
+      <div class="ribbon">Best Value</div>
+      <div class="tier-name">Growth</div>
+      <div class="for-who">Best for growing businesses with multiple staff, branches, or remote oversight needs.</div>
+      <div class="price">₦270,000<span>/year</span></div>
+      <div class="price-sub">≈ ₦22,500/month — save ~25% vs monthly</div>
+      <ul>
+        <li><span class="tick">✓</span> Unlimited team members, all 7 roles</li>
+        <li><span class="tick">✓</span> Everything in Starter, plus:</li>
+        <li><span class="tick">✓</span> Purchase &amp; Sales Orders</li>
+        <li><span class="tick">✓</span> Reorder Alerts, Adjustments, Batch &amp; Expiry</li>
+        <li><span class="tick">✓</span> Expenses &amp; full Profit &amp; Loss</li>
+        <li><span class="tick">✓</span> Advanced Reports (Daily/Weekly/Monthly/Yearly)</li>
+        <li><span class="tick">✓</span> Barcode scanning &amp; receipt printing</li>
+        <li><span class="tick">✓</span> Backup &amp; restore, priority support</li>
+      </ul>
+      <button class="btn" onclick="startFree('Growth','Yearly','₦270,000/year')">Start for Free</button>
+      <div class="trial-line">7 days free, then ₦270,000/year</div>
+    </div>
+  </div>
+</div>
+
+<div class="faq-mini">
+  <h2>Pricing questions</h2>
+  <details>
+    <summary>What happens after my 7-day free trial?</summary>
+    <p>You keep full access to everything in the plan you picked. If you'd like to continue, open the <b>Upgrade &amp; Subscription</b> tab on your Admin dashboard — pay by bank transfer, upload your proof of payment, and you're upgraded automatically once it's confirmed. You can also reach OKV Technology Consults directly at <a href="mailto:technologyokv@gmail.com">technologyokv@gmail.com</a> or <a href="tel:+2348104141138">+234 810 414 1138</a>. Your Admin dashboard shows a countdown and an Upgrade button the whole time so there are no surprises.</p>
+  </details>
+  <details>
+    <summary>Can I switch plans or billing cycles later?</summary>
+    <p>Yes — submit a new request any time from the Upgrade &amp; Subscription tab, or contact OKV Technology Consults (<a href="mailto:technologyokv@gmail.com">technologyokv@gmail.com</a> · <a href="tel:+2348104141138">+234 810 414 1138</a>) to move between Starter and Growth, or change your billing cycle. Your data stays exactly as it is.</p>
+  </details>
+  <details>
+    <summary>What does the 30-day money-back guarantee cover?</summary>
+    <p>If you pay for a plan and it's not right for your business, tell us within 30 days of that payment and we'll refund it in full — no long forms, no hassle.</p>
+  </details>
+  <details>
+    <summary>Is there a setup fee?</summary>
+    <p>No. The price shown is everything — no hidden setup or onboarding fees.</p>
+  </details>
+</div>
+
+<div class="final-cta">
+  <h2>Not ready to pick a plan?</h2>
+  <p>Take the live demo for a spin first — no signup needed.</p>
+  <a class="cta" href="demo.html">View Live Demo</a>
+</div>
+
+<footer>Developed by: OKV Technology Consults &middot; technologyokv@gmail.com &middot; +234 810 414 1138 &middot; www.okvtechnology.com</footer>
+
+<script>
+function showCycle(cycle){
+  document.querySelectorAll('.cycle-tab').forEach(t => t.classList.toggle('active', t.dataset.cycle === cycle));
+  document.querySelectorAll('.plans-wrap').forEach(w => w.classList.toggle('active', w.id === 'wrap-' + cycle));
+}
+function startFree(plan, cycle, priceLabel){
+  window.location.href = 'signup.html?plan=' + encodeURIComponent(plan) + '&cycle=' + encodeURIComponent(cycle) + '&price=' + encodeURIComponent(priceLabel);
+}
+// Deep-link support: pricing.html?cycle=yearly opens straight to that tab
+const preselectCycle = new URLSearchParams(window.location.search).get('cycle');
+if(preselectCycle && document.getElementById('wrap-' + preselectCycle)) showCycle(preselectCycle);
+</script>
+</body>
+</html>
